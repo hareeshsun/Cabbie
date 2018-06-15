@@ -6,6 +6,7 @@
     tools:context="com.suntechnologies.cabbie.MainActivity">
 
     <TextView
+        android:id="@+id/welcomeText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Welcome to Cabbie - Hackthone 2018"
