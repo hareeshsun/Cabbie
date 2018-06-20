@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 public class SplashScreen extends Activity {
 
-    private static int SPLASH_TIME_OUT = 6000;
+    private static int SPLASH_TIME_OUT = 5000;
     private static int TITLE_TIME_OUT = 2000;
 
     @Override
@@ -51,7 +51,7 @@ public class SplashScreen extends Activity {
             @Override
             public void run() {
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LoginPage.class);
                 startActivity(intent);
                 finish();
 
