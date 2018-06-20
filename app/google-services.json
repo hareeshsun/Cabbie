@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "805860432456",
+    "firebase_url": "https://suncabbie.firebaseio.com",
+    "project_id": "suncabbie",
+    "storage_bucket": "suncabbie.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805860432456:android:3270252f281b3331",
+        "android_client_info": {
+          "package_name": "com.suntechnologies.cabbie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "805860432456-demu872rpfna82i1a4meqgisnpt39amo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.suntechnologies.cabbie",
+            "certificate_hash": "f2bfb3c1782b83f785ef8363a002b3941f89aeb6"
+          }
+        },
+        {
+          "client_id": "805860432456-ug13o3jt3t9g1k16sr8s4c4ri4lhq134.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "805860432456-ug13o3jt3t9g1k16sr8s4c4ri4lhq134.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9f4R3aQJUFILo9QdEsm6ZrpVqCF4YQB0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "805860432456-ug13o3jt3t9g1k16sr8s4c4ri4lhq134.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
