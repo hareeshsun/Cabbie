@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Sun Cabbie</string>
+    <string name="email_address">Email address</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="new_account">New to Sun Cabbie?  </string>
+    <string name="sign_up_now">Sign up now</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sun_logo">Logo</string>
+    <string name="report_to">Reporting Manager</string>
+    <string name="designation">Designation</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="employee_id">Employee ID</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
 </resources>
