@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.multidex.MultiDex;
+
+import com.google.firebase.FirebaseApp;
 
 /**
  * Created by hareeshs on 20-06-2018.
@@ -15,6 +16,7 @@ public class SunCabbie extends Application implements Application.ActivityLifecy
     private Context applicationContext;
     private Context currentActivityContext;
     private Activity currentActivity;
+    private FirebaseApp firebaseApp;
 
     private static SunCabbie currentSession;
 
@@ -26,6 +28,7 @@ public class SunCabbie extends Application implements Application.ActivityLifecy
         super.onCreate();
         currentSession = this;
         applicationContext = this;
+        firebaseApp = FirebaseApp.initializeApp(this);
         registerActivityLifecycleCallbacks(this);
     }
 
@@ -39,7 +42,6 @@ public class SunCabbie extends Application implements Application.ActivityLifecy
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     public static SunCabbie getCurrentSession(){

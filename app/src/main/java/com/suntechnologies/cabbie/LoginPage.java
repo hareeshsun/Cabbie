@@ -24,6 +24,9 @@ public class LoginPage extends AppCompatActivity {
         Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
 
+/*        email.setText("admin@suntechnologies.com");
+        password.setText("Reset123");*/
+
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
