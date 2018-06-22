@@ -2,30 +2,45 @@ package com.suntechnologies.cabbie;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginPage extends AppCompatActivity {
-
+    private FirebaseAuth mAuth;
+    private String TAG ="LoginPaGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login_page);
 
+
+        mAuth = FirebaseAuth.getInstance();
+
         final EditText email =  (EditText) findViewById(R.id.email);
         final EditText password =  (EditText) findViewById(R.id.password);
         Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
-
-/*        email.setText("admin@suntechnologies.com");
-        password.setText("Reset123");*/
 
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +52,7 @@ public class LoginPage extends AppCompatActivity {
         });
 
         email.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
                 email.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.white_background_with_black_border,null));
@@ -44,6 +60,7 @@ public class LoginPage extends AppCompatActivity {
         });
 
         password.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
                 password.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.white_background_with_black_border,null));
@@ -51,28 +68,72 @@ public class LoginPage extends AppCompatActivity {
         });
 
         login.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-                if(email.getText().toString().equalsIgnoreCase("admin@suntechnologies.com") && password.getText().toString().equalsIgnoreCase("Reset123")){
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                else{
-                    if (email.getText().toString().length() > 7 && password.getText().length() > 5) {
-                        HelperMethods.showDialog("Error","Invalid email or password");
-                    }
-                    else {
-                        HelperMethods.showDialog("Error","please fill required fields");
-                        if(email.getText().toString().length() == 0)
-                        email.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.white_background_with_red_border,null));
 
-                        if(password.getText().toString().length() == 0)
-                            password.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.white_background_with_red_border,null));
+                if (email.getText().toString().trim().length()>0 && password.getText().toString().trim().length()>0)
+                {
+
+                    if(!HelperMethods.isValidEmaillId(email.getText().toString().trim())){
+                        email.setError("Email is not valid");
+                    }else{
+                        mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(LoginPage.this, new OnCompleteListener<AuthResult>()
+                        {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task)
+                            {
+                                if (task.isSuccessful())
+                                {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+
+                                    Intent intent = new Intent(LoginPage.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+
+
+                                } else
+                                {
+                                    try {
+                                        throw task.getException();
+                                    } catch(FirebaseAuthWeakPasswordException e) {
+
+                                        HelperMethods.showDialog(LoginPage.this, "Error", "Password is week");
+
+                                    } catch(FirebaseAuthInvalidCredentialsException e) {
+                                        HelperMethods.showDialog(LoginPage.this, "Error", "this credential is not available!");
+
+                                    } catch(FirebaseAuthUserCollisionException e) {
+                                        HelperMethods.showDialog(LoginPage.this, "Error", "This email is already is registered !");
+
+                                    } catch(Exception e) {
+                                        Log.e(TAG, e.getMessage());
+                                    }
+                                    // If sign in fails, display a message to the user.
+                                    HelperMethods.showDialog(LoginPage.this, "signInWithEmail:failure", task.getException().toString());
+
+
+                                }
+
+
+                            }
+                        });
                     }
+
+
                 }
+                else  {
+
+                    HelperMethods.showDialog(LoginPage.this,"Alert", "Email or Password filed cannot be empty! ");
+                }
+
+
             }
         });
+
+
+
 
     }
 

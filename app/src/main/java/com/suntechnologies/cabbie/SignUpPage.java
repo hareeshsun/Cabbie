@@ -1,35 +1,55 @@
 package com.suntechnologies.cabbie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Created by hareeshs on 20-06-2018.
  */
 
 public class SignUpPage extends AppCompatActivity {
+    Spinner designationSpinner,reportTO;
+    EditText firstNameTxt, lastNameTxt, emailAddressTxt, mobileNumberTxt,addressTxt,currentAddressTxt,landmarkTxt, passwordTxt, employeeIdTxt,confirmPasswordTxt;
+    Button signUp;
+    TextView signIn;
 
     private ArrayList<String> designationList = new ArrayList<>();
     private ArrayList<String> reportingManagerList = new ArrayList<>();
     private FirebaseAuth mAuth;
     private static final String TAG = "EmailPassword";
+
+
+    private DatabaseReference mDatabase;
+    FirebaseDatabase database;
+    String firstName, lastName, emailAddress, mobileNumber,address,currentAddress,landmark, password,confirmPassword, employeeId,designation,reportManagerId;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +57,26 @@ public class SignUpPage extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.sign_up);
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        mDatabase = database.getReference("usersData");
 
-        final EditText firstName = (EditText) findViewById(R.id.firstName);
-        final EditText lastName = (EditText) findViewById(R.id.lastName);
-        final EditText emailAddress = (EditText) findViewById(R.id.emailAddress);
-        final EditText mobileNumber = (EditText) findViewById(R.id.mobileNumber);
-        final EditText password = (EditText) findViewById(R.id.password);
-        Spinner designation = (Spinner) findViewById(R.id.designationSpinner);
-        Spinner reportTO = (Spinner) findViewById(R.id.reportTo);
-        Button signUp = (Button) findViewById(R.id.signUp);
+        firstNameTxt = (EditText) findViewById(R.id.firstName);
+        lastNameTxt = (EditText) findViewById(R.id.lastName);
+        emailAddressTxt = (EditText) findViewById(R.id.emailAddress);
+        mobileNumberTxt = (EditText) findViewById(R.id.mobileNumber);
+        employeeIdTxt = (EditText) findViewById(R.id.employeeID);
+        passwordTxt = (EditText) findViewById(R.id.password);
+        confirmPasswordTxt = (EditText) findViewById(R.id.confirmPassword);
+        addressTxt = (EditText) findViewById(R.id.address);
+        currentAddressTxt = (EditText) findViewById(R.id.currentAddress);
+        landmarkTxt = (EditText) findViewById(R.id.landmark);
+        signIn = (TextView) findViewById(R.id.signIn);
+
+
+
+        designationSpinner = (Spinner) findViewById(R.id.designationSpinner);
+        reportTO = (Spinner) findViewById(R.id.reportTo);
+        signUp = (Button) findViewById(R.id.signUp);
 
         designationList.add("Select Designation");
         designationList.add("Jr. Software Engg.");
@@ -57,8 +88,21 @@ public class SignUpPage extends AppCompatActivity {
         designationList.add("Manager");
 
         DesignationAdapter designationAdapter = new DesignationAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,designationList);
-        designation.setAdapter(designationAdapter);
+        designationSpinner.setAdapter(designationAdapter);
+        designationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                designation = designationSpinner.getSelectedItem().toString();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
         reportingManagerList.add("Select Reporting Manager");
         reportingManagerList.add("Bala");
         reportingManagerList.add("Tahir");
@@ -70,38 +114,119 @@ public class SignUpPage extends AppCompatActivity {
         DesignationAdapter reportingManagerAdapter = new DesignationAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,reportingManagerList);
         reportTO.setAdapter(reportingManagerAdapter);
 
+        reportTO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                reportManagerId = reportTO.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString().trim())
-                        .addOnCompleteListener(SignUpPage.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    //updateUI(user);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignUpPage.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
 
-                                }
 
-                            }
-                        });
+                firstName = firstNameTxt.getText().toString().trim();
+                lastName = lastNameTxt.getText().toString().trim();
+                emailAddress = emailAddressTxt.getText().toString().trim();
+                employeeId = employeeIdTxt.getText().toString().trim();
+                mobileNumber = mobileNumberTxt.getText().toString().trim();
+                password = passwordTxt.getText().toString().trim();
+                confirmPassword = confirmPasswordTxt.getText().toString().trim();
+                address = addressTxt.getText().toString();
+                currentAddress = currentAddressTxt.getText().toString();
+                landmark = landmarkTxt.getText().toString();
+
+
+
+                if ( firstName.length() > 0 && lastName.length()>0 && emailAddress.length()>0 && employeeId.length()>0 && mobileNumber.length()>0 && password.length()>0 && confirmPassword.length()>0 && address.length()>0
+                        && currentAddress.length()>0 && landmark.length()>0 && !designation.equalsIgnoreCase("Select Designation") && !reportManagerId.equalsIgnoreCase("Select Reporting Manager")) {
+
+                    if(!firstName.matches("[a-zA-Z]*")){
+
+                        firstNameTxt.setError("Invalid name");
+                    }else if(!lastName.matches("[a-zA-Z]*")){
+                        lastNameTxt.setError("Invalid name");
+
+                    }else if(!emailAddress.matches("[a-zA-Z0-9._-]+@[a-z]+.[a-z]+")){
+                        emailAddressTxt.setError("Invalid Email Address");
+
+                    }
+                    else if(mobileNumber.length()!=10){
+                        mobileNumberTxt.setError("Invalid mobile number");
+                    }else if(!password.equals(confirmPassword)){
+                        Toast.makeText(SignUpPage.this,"password and confirmed password is not matching!",Toast.LENGTH_SHORT).show();
+                    }else{
+                        mAuth.createUserWithEmailAndPassword(emailAddress, password)
+                                .addOnCompleteListener(SignUpPage.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            // Sign in success, update UI with the signed-in user's information
+                                            Log.d(TAG, "createUserWithEmail:success");
+                                            FirebaseUser user = mAuth.getCurrentUser();
+                                            user.getEmail();
+
+                                            writeNewUser( employeeId,user.getEmail(), firstName, lastName, mobileNumber,designation,reportManagerId,address,currentAddress,landmark);
+
+
+                                        } else {
+                                            // If sign in fails, display a message to the user.
+
+
+                                                HelperMethods.showDialog(SignUpPage.this, "Error",task.getException().toString());
+
+
+
+                                        }
+
+                                    }
+                                });
+
+
+                    }
+
+                }else{
+                    HelperMethods.showDialog(SignUpPage.this,"Alert","Please fill all the filed!");
+                }
+
+
+
             }
         });
+
+
+        signIn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(SignUpPage.this, LoginPage.class);
+                startActivity(intent);
+
+            }
+        });
+
+
     }
 
-    private boolean validation(EditText firstName,EditText lastName, EditText emailAddress,
-                               EditText mobileNumber, String designation, String reportManager){
-        if(firstName.getText().length() == 0){
-            HelperMethods.showDialog("Please fill required fields","");
-            return false;
-        }
-        return true;
+    private void writeNewUser(String emplyoeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManger,String address,String currentAddress,String landmark) {
+        User user = new User(emplyoeeId,firstName, lastName,phoneNumer,designation,reportingManger,emailId,address,currentAddress,landmark);
+        mDatabase.child(emplyoeeId).setValue(user);
+
+        Intent intent = new Intent(SignUpPage.this, LoginPage.class);
+        startActivity(intent);
+
+
     }
+
+
 }

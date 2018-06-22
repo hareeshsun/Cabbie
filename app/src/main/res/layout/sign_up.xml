@@ -36,6 +36,7 @@
                 android:background="@drawable/white_background_with_black_border"
                 android:hint="@string/first_name"
                 android:padding="5dp"
+                android:inputType="text"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
@@ -49,6 +50,7 @@
                 android:hint="@string/last_name"
                 android:padding="5dp"
                 android:textColor="@color/black"
+                android:inputType="text"
                 android:textSize="20sp" />
 
             <EditText
@@ -86,6 +88,40 @@
                 android:maxLength="10"
                 android:padding="5dp"
                 android:textSize="20sp" />
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/white_background_with_black_border"
+                android:hint="@string/address"
+                android:inputType="text|textNoSuggestions"
+                android:maxLength="10"
+                android:padding="5dp"
+                android:textSize="20sp" />
+            <EditText
+                android:id="@+id/currentAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/white_background_with_black_border"
+                android:hint="@string/area"
+                android:inputType="text|textNoSuggestions"
+                android:maxLength="10"
+                android:padding="5dp"
+                android:textSize="20sp" />
+            <EditText
+                android:id="@+id/landmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/white_background_with_black_border"
+                android:hint="@string/landmark"
+                android:inputType="text|textNoSuggestions"
+                android:maxLength="10"
+                android:padding="5dp"
+                android:textSize="20sp" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -216,6 +252,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/signIn"
             android:text="Sign In"
             android:textColor="@color/darkGreen"
             android:textSize="20sp"

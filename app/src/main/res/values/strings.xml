@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Sun Cabbie</string>
     <string name="email_address">Email address</string>
+    <string name="address">Current Address</string>
+    <string name="area">Address Area</string>
+    <string name="landmark">Landmark</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="new_account">New to Sun Cabbie?  </string>
