@@ -3,6 +3,11 @@ package com.suntechnologies.cabbie;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
+import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
 
 import java.util.regex.Pattern;
 
@@ -11,6 +16,24 @@ import java.util.regex.Pattern;
  */
 
 public class HelperMethods {
+
+
+    public static void replaceFragment(Context context, int containerId, Fragment fragment, boolean addToBackStack)
+    {
+        try
+        {
+            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if (addToBackStack)
+                fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.replace(containerId, fragment);
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            fragmentTransaction.commitAllowingStateLoss();
+        } catch (IllegalArgumentException | IllegalStateException iae)
+        {
+            iae.printStackTrace();
+        }
+    }
 
     public static void showDialog(Context context,String title, String message)
     {
@@ -33,6 +56,8 @@ public class HelperMethods {
             e.printStackTrace();
         }
     }
+
+
     public static  boolean isValidEmaillId(String email){
 
         return Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
