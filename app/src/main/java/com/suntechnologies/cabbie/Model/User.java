@@ -1,4 +1,4 @@
-package com.suntechnologies.cabbie;
+package com.suntechnologies.cabbie.Model;
 
 /**
  * Created by mithulalr on 6/21/2018.

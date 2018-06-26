@@ -1,0 +1,59 @@
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <ImageView
+            android:id="@+id/mainMenu"
+            android:layout_gravity="start"
+            android:layout_width="35dp"
+            android:layout_height="50dp"
+            android:src="@drawable/menu"
+            android:layout_margin="5dp"
+            android:layout_weight="2"/>
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Sun Cabbie"
+            android:textStyle="bold|italic"
+            android:textSize="30sp"
+            android:layout_margin="5dp"
+            android:textColor="@color/white"
+            android:layout_weight="2"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_margin="5dp">
+
+            <ImageView
+                android:id="@+id/notifications"
+                android:gravity="end"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/notification"/>
+
+            <ImageView
+                android:id="@+id/requestCab"
+                android:gravity="end"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/round_icon"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.Toolbar>

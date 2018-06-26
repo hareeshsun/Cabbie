@@ -4,6 +4,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -13,7 +14,7 @@ import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
-    CoordinatorLayout coordinatorLayout;
+    Toolbar coordinatorLayout;
     FrameLayout frameLayout;
     ImageView mainMenu, notificaiton, requestCab;
 
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.app_bar);
+        coordinatorLayout = (Toolbar) findViewById(R.id.toolbar);
         mainMenu = (ImageView) coordinatorLayout.findViewById(R.id.mainMenu);
         notificaiton = (ImageView) coordinatorLayout.findViewById(R.id.notifications);
         requestCab = (ImageView) coordinatorLayout.findViewById(R.id.requestCab);

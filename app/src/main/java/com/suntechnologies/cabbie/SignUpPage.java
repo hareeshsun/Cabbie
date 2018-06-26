@@ -18,16 +18,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
+import com.suntechnologies.cabbie.Model.User;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 /**
  * Created by hareeshs on 20-06-2018.

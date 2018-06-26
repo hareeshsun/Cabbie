@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/lib/com.suntechnologies.cabbie"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+              android:orientation="vertical"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <android.support.design.widget.AppBarLayout
+  <!--  <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,13 +65,18 @@
 
         </LinearLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.AppBarLayout>-->
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/tool_bar" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent">
 
     </FrameLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>
