@@ -171,8 +171,9 @@ public class SignUpPage extends AppCompatActivity {
                                             Log.d(TAG, "createUserWithEmail:success");
                                             FirebaseUser user = mAuth.getCurrentUser();
                                             user.getEmail();
+                                            user.getUid();
 
-                                            writeNewUser( employeeId,user.getEmail(), firstName, lastName, mobileNumber,designation,reportManagerId,address,currentAddress,landmark);
+                                            writeNewUser(  user.getUid(),employeeId,user.getEmail(), firstName, lastName, mobileNumber,designation,reportManagerId,address,currentAddress,landmark);
 
 
                                         } else {
@@ -215,9 +216,9 @@ public class SignUpPage extends AppCompatActivity {
 
     }
 
-    private void writeNewUser(String emplyoeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManger,String address,String currentAddress,String landmark) {
+    private void writeNewUser(String uid,String emplyoeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManger,String address,String currentAddress,String landmark) {
         User user = new User(emplyoeeId,firstName, lastName,phoneNumer,designation,reportingManger,emailId,address,currentAddress,landmark);
-        mDatabase.child(emplyoeeId).setValue(user);
+        mDatabase.child(uid).setValue(user);
 
         Intent intent = new Intent(SignUpPage.this, LoginPage.class);
         startActivity(intent);

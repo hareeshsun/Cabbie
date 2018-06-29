@@ -10,4 +10,11 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="profile_width">75dp</dimen>
     <dimen name="profile_height">75dp</dimen>
+    <dimen name="text_size_20">20dp</dimen>
+    <dimen name="text_size_18">18dp</dimen>
+    <dimen name="text_size_14">14dp</dimen>
+    <dimen name="text_size_12">12dp</dimen>
+    <dimen name="text_size_16">16dp</dimen>
+    <dimen name="text_size_24">24dp</dimen>
+    <dimen name="text_size_22">22dp</dimen>
 </resources>

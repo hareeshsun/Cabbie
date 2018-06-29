@@ -34,11 +34,11 @@ public EmployeeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 @Override
 public void onBindViewHolder(EmployeeViewHolder holder, int position) {
     Employee employee = employees.get(position);
-        holder.tvName.setText(employee.employeeName);
-        holder.mangerName.setText(employee.empyloyeeMangerName);
-        holder.designation.setText(employee.employeeDesitnation);
-        holder.tvStatus.setText(employee.employeeStatus);
-        holder.employeeID.setText(employee.employeeId);
+        holder.tvName.setText(employee.employee_name);
+        holder.mangerName.setText(employee.empyloyee_manger_name);
+        holder.designation.setText(employee.employee_desitnation);
+        holder.tvStatus.setText(employee.employee_status);
+        holder.employeeID.setText(employee.employee_id);
         }
 
 @Override

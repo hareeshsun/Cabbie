@@ -6,21 +6,21 @@ package com.suntechnologies.cabbie.Model;
 
 public class Employee
 {
-    public String employeeName;
-    public String employeeId;
-    public String empyloyeeMangerName;
-    public String employeeDesitnation;
-    public String employeeStatus;
+    public String employee_name;
+    public String employee_id;
+    public String empyloyee_manger_name;
+    public String employee_desitnation;
+    public String employee_status;
 
     Employee(){
 
     }
-    public  Employee(  String employeeName, String employeeId, String empyloyeeMangerName, String employeeDesitnation, String employeeStatus){
-        this.employeeName =employeeName;
-        this.employeeId =employeeId;
-        this.empyloyeeMangerName =empyloyeeMangerName;
-        this.employeeDesitnation =employeeDesitnation;
-        this.employeeStatus =employeeStatus;
+    public  Employee(String employee_name, String employee_id, String empyloyee_manger_name, String employee_desitnation, String employee_status){
+        this.employee_name = employee_name;
+        this.employee_id = employee_id;
+        this.empyloyee_manger_name = empyloyee_manger_name;
+        this.employee_desitnation = employee_desitnation;
+        this.employee_status = employee_status;
 
     }
 }

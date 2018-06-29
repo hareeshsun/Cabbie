@@ -23,7 +23,7 @@
           android:layout_width="wrap_content"
           android:text="Employee Details"
           android:padding="2dp"
-          android:id="@+id/employeeName"
+          android:id="@+id/employee_name"
           android:layout_weight="1"
           android:layout_height="wrap_content"/>
 

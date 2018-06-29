@@ -21,7 +21,7 @@ public TextView tvStatus;
 
 public EmployeeViewHolder(View itemView) {
         super(itemView);
-        tvName = (TextView) itemView.findViewById(R.id.employeeName);
+        tvName = (TextView) itemView.findViewById(R.id.employee_name);
         tvStatus = (TextView) itemView.findViewById(R.id.status);
         designation = (TextView) itemView.findViewById(R.id.designation);
         mangerName = (TextView) itemView.findViewById(R.id.mangerName);

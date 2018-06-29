@@ -1,6 +1,8 @@
 package com.suntechnologies.cabbie;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,26 +26,32 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 public class LoginPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String TAG ="LoginPaGE";
+    SharedPreferences.Editor editor;
+    private String USER_TOKEN_KEY = "USERTOKEN";
+    private String USER_UID = "USERUID";
+    SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login_page);
-
-
         mAuth = FirebaseAuth.getInstance();
 
         final EditText email =  (EditText) findViewById(R.id.email);
         final EditText password =  (EditText) findViewById(R.id.password);
         Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
-
-        email.setText("singala@suntechnologies.com");
-        password.setText("Reset123");
+/*
+        email.setText("mithulalr@suntechnologies.com");
+        password.setText("12345");*/
+        preferences = getSharedPreferences(USER_TOKEN_KEY, Context.MODE_PRIVATE);
+        editor =preferences.edit();
 
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,9 +95,12 @@ public class LoginPage extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task)
                             {
                                 if (task.isSuccessful())
+
+
                                 {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "signInWithEmail:success");
+
+                                    editor.putString(USER_UID,mAuth.getCurrentUser().getUid() );
+                                    editor.apply();
 
                                     Intent intent = new Intent(LoginPage.this, MainActivity.class);
                                     startActivity(intent);
@@ -139,5 +150,7 @@ public class LoginPage extends AppCompatActivity {
 
 
     }
+
+
 
 }
