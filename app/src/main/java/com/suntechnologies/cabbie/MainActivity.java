@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.suntechnologies.cabbie.Fragments.CabRequest;
 import com.suntechnologies.cabbie.Fragments.EmergencyDetails;
 import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
 import com.suntechnologies.cabbie.Fragments.FacilityFragment;
+import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.Fragments.OnBoarding;
 import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
 
@@ -42,8 +44,11 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.header_name);
 
-        ImageView notificaiton = (ImageView) toolBar.findViewById(R.id.notification);
+        ImageView notification = (ImageView) findViewById(R.id.notification);
         requestCab = (ImageView) findViewById(R.id.cabRequest);
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null){
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmployeeFragment(),true);
+                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmployeeFragment(),false);
                 }
                 else {
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -86,6 +91,14 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             public void onClick(View view) {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new CabRequest(),true);
+            }
+        });
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new Notification(),true);
             }
         });
 

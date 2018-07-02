@@ -38,6 +38,9 @@ public class EmployeeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.employee_home_page,container, false);
         rv_cycle = (RecyclerView) rootView.findViewById(R.id.rv_cycle);
+        if(customerClosedActionArrayList != null && customerClosedActionArrayList.size() > 0){
+            customerClosedActionArrayList.clear();
+        }
         customerClosedActionArrayList.add(new Employee("Hareesh","2305","Tahir","HBR Layout 43rd cross","true"));
         customerClosedActionArrayList.add(new Employee("mithu","2305","Tahir","HBR Layout 43rd cross","true"));
         customerClosedActionArrayList.add(new Employee("vedant","2305","Tahir","HBR Layout 43rd cross","true"));

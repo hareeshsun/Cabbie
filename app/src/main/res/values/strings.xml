@@ -17,6 +17,8 @@
     <string name="last_name">Last Name</string>
     <string name="first_name">First Name</string>
 
+    <string name="header_name"> <font size="28"><i><b>Sun Cabbie</b></i></font> </string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="openDrawer">open_drawer</string>
