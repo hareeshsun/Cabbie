@@ -37,7 +37,6 @@
             android:layout_margin="5dp">
 
             <ImageView
-                android:id="@+id/notifications"
                 android:gravity="end"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -45,7 +44,6 @@
                 android:src="@drawable/notification"/>
 
             <ImageView
-                android:id="@+id/requestCab"
                 android:gravity="end"
                 android:layout_width="40dp"
                 android:layout_height="40dp"

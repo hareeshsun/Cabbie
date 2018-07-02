@@ -1,38 +1,86 @@
 package com.suntechnologies.cabbie;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.suntechnologies.cabbie.Fragments.AccountDetails;
 import com.suntechnologies.cabbie.Fragments.CabRequest;
+import com.suntechnologies.cabbie.Fragments.EmergencyDetails;
 import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
+import com.suntechnologies.cabbie.Fragments.FacilityFragment;
+import com.suntechnologies.cabbie.Fragments.OnBoarding;
+import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
 
-public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
-    Toolbar coordinatorLayout;
-    FrameLayout frameLayout;
-    ImageView mainMenu, notificaiton, requestCab;
+    private FrameLayout frameLayout;
+    private ImageView requestCab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        coordinatorLayout = (Toolbar) findViewById(R.id.toolbar);
-        mainMenu = (ImageView) coordinatorLayout.findViewById(R.id.mainMenu);
-        notificaiton = (ImageView) coordinatorLayout.findViewById(R.id.notifications);
-        requestCab = (ImageView) coordinatorLayout.findViewById(R.id.requestCab);
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolBar);
 
+        ImageView notificaiton = (ImageView) toolBar.findViewById(R.id.notification);
+        requestCab = (ImageView) findViewById(R.id.cabRequest);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        HelperMethods.replaceFragment(this,frameLayout.getId(),new EmployeeFragment(),true);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        String USER_TOKEN_KEY = "USERTOKEN";
+        SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY,MODE_PRIVATE);
+        String USER_UID = "USERUID";
+        String uid = preferences.getString(USER_UID, null);
+
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
+        mDatabase.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmployeeFragment(),true);
+                }
+                else {
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new FacilityFragment(),true);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
         requestCab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,6 +93,44 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     @Override
     public void onBackStackChanged() {
-        super.onBackPressed();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_account) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new AccountDetails(),true);
+        } else if (id == R.id.nav_boarding) {
+
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new OnBoarding(),true);
+        } else if (id == R.id.nav_previous) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new PreviousRideDetails(),true);
+
+        } else if (id == R.id.nav_emergency) {
+
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmergencyDetails(),true);
+        } else if (id == R.id.nav_logout) {
+            Intent intent = new Intent(MainActivity.this, LoginPage.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.nav_about_us) {
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
     }
 }

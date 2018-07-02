@@ -1,5 +1,6 @@
 package com.suntechnologies.cabbie;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 
+import dmax.dialog.SpotsDialog;
+
 public class LoginPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String TAG ="LoginPaGE";
@@ -35,6 +38,7 @@ public class LoginPage extends AppCompatActivity {
     private String USER_TOKEN_KEY = "USERTOKEN";
     private String USER_UID = "USERUID";
     SharedPreferences preferences;
+    private Dialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +49,10 @@ public class LoginPage extends AppCompatActivity {
 
         final EditText email =  (EditText) findViewById(R.id.email);
         final EditText password =  (EditText) findViewById(R.id.password);
-        Button login = (Button) findViewById(R.id.login);
+        final Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
-/*
-        email.setText("mithulalr@suntechnologies.com");
-        password.setText("12345");*/
+
+        loadingDialog = new SpotsDialog(this,"Logging...");
         preferences = getSharedPreferences(USER_TOKEN_KEY, Context.MODE_PRIVATE);
         editor =preferences.edit();
 
@@ -82,30 +85,28 @@ public class LoginPage extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-
                 if (email.getText().toString().trim().length()>0 && password.getText().toString().trim().length()>0)
                 {
-
                     if(!HelperMethods.isValidEmaillId(email.getText().toString().trim())){
                         email.setError("Email is not valid");
                     }else{
+                        loadingDialog.show();
                         mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(LoginPage.this, new OnCompleteListener<AuthResult>()
                         {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task)
                             {
+                                if(loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
                                 if (task.isSuccessful())
-
-
                                 {
-
                                     editor.putString(USER_UID,mAuth.getCurrentUser().getUid() );
                                     editor.apply();
 
                                     Intent intent = new Intent(LoginPage.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
-
 
                                 } else
                                 {
@@ -126,31 +127,16 @@ public class LoginPage extends AppCompatActivity {
                                     }
                                     // If sign in fails, display a message to the user.
                                     HelperMethods.showDialog(LoginPage.this, "signInWithEmail:failure", task.getException().toString());
-
-
                                 }
-
-
                             }
                         });
                     }
-
-
                 }
-                else  {
-
+                else{
                     HelperMethods.showDialog(LoginPage.this,"Alert", "Email or Password filed cannot be empty! ");
                 }
-
-
             }
         });
 
-
-
-
     }
-
-
-
 }

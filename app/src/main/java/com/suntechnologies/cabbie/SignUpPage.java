@@ -1,5 +1,6 @@
 package com.suntechnologies.cabbie;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,6 +27,8 @@ import com.suntechnologies.cabbie.Model.User;
 
 import java.util.ArrayList;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * Created by hareeshs on 20-06-2018.
  */
@@ -35,6 +38,7 @@ public class SignUpPage extends AppCompatActivity {
     EditText firstNameTxt, lastNameTxt, emailAddressTxt, mobileNumberTxt,addressTxt,currentAddressTxt,landmarkTxt, passwordTxt, employeeIdTxt,confirmPasswordTxt;
     Button signUp;
     TextView signIn;
+    private Dialog loadingDialog;
 
     private ArrayList<String> designationList = new ArrayList<>();
     private ArrayList<String> reportingManagerList = new ArrayList<>();
@@ -69,11 +73,11 @@ public class SignUpPage extends AppCompatActivity {
         landmarkTxt = (EditText) findViewById(R.id.landmark);
         signIn = (TextView) findViewById(R.id.signIn);
 
-
-
         designationSpinner = (Spinner) findViewById(R.id.designationSpinner);
         reportTO = (Spinner) findViewById(R.id.reportTo);
         signUp = (Button) findViewById(R.id.signUp);
+
+        loadingDialog = new SpotsDialog(this,"Signing Up...");
 
         designationList.add("Select Designation");
         designationList.add("Jr. Software Engg.");
@@ -130,7 +134,6 @@ public class SignUpPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
                 firstName = firstNameTxt.getText().toString().trim();
                 lastName = lastNameTxt.getText().toString().trim();
                 emailAddress = emailAddressTxt.getText().toString().trim();
@@ -162,10 +165,14 @@ public class SignUpPage extends AppCompatActivity {
                     }else if(!password.equals(confirmPassword)){
                         Toast.makeText(SignUpPage.this,"password and confirmed password is not matching!",Toast.LENGTH_SHORT).show();
                     }else{
+                        loadingDialog.show();
                         mAuth.createUserWithEmailAndPassword(emailAddress, password)
                                 .addOnCompleteListener(SignUpPage.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if(loadingDialog != null && loadingDialog.isShowing()){
+                                            loadingDialog.dismiss();
+                                        }
                                         if (task.isSuccessful()) {
                                             // Sign in success, update UI with the signed-in user's information
                                             Log.d(TAG, "createUserWithEmail:success");
@@ -178,26 +185,15 @@ public class SignUpPage extends AppCompatActivity {
 
                                         } else {
                                             // If sign in fails, display a message to the user.
-
-
                                                 HelperMethods.showDialog(SignUpPage.this, "Error",task.getException().toString());
-
-
-
                                         }
-
                                     }
                                 });
-
-
                     }
 
                 }else{
                     HelperMethods.showDialog(SignUpPage.this,"Alert","Please fill all the filed!");
                 }
-
-
-
             }
         });
 
@@ -209,10 +205,8 @@ public class SignUpPage extends AppCompatActivity {
             {
                 Intent intent = new Intent(SignUpPage.this, LoginPage.class);
                 startActivity(intent);
-
             }
         });
-
 
     }
 

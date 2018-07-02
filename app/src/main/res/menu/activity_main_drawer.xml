@@ -3,27 +3,27 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@mipmap/cabbie_app_icon"
-            android:title="@string/nav_home" />
+            android:id="@+id/nav_account"
+            android:icon="@drawable/user_account"
+            android:title="@string/nav_account" />
         <item
-            android:id="@+id/nav_photos"
-            android:icon="@mipmap/cabbie_app_icon"
-            android:title="@string/nav_photos" />
+            android:id="@+id/nav_boarding"
+            android:icon="@drawable/on_boarding"
+            android:title="@string/nav_boarding" />
         <item
-            android:id="@+id/nav_movies"
+            android:id="@+id/nav_previous"
             android:icon="@mipmap/cabbie_app_icon"
-            android:title="@string/nav_movies" />
+            android:title="@string/nav_previous_ride" />
 
         <item
-            android:id="@+id/nav_notifications"
-            android:icon="@mipmap/cabbie_app_icon"
-            android:title="@string/nav_notifications" />
+            android:id="@+id/nav_emergency"
+            android:icon="@drawable/emergency"
+            android:title="@string/nav_emergency" />
 
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@mipmap/cabbie_app_icon"
-            android:title="@string/nav_settings" />
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/logout"
+            android:title="@string/nav_logout" />
     </group>
 
     <item android:title="Other">

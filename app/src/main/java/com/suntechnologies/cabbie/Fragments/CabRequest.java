@@ -80,18 +80,20 @@ public class CabRequest extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                Log.d("dss",dataSnapshot.getValue().toString());
+                //Log.d("dss",dataSnapshot.getValue().toString());
                 userData = dataSnapshot.getValue(User.class);
-                employeeName.setText(userData.firstName + " " +userData.lastName);
-                employeeID.setText(userData.emplyoeeId);
-                employeeEmail.setText(userData.emailAddress);
-                employeeNumber.setText(userData.phoneNumber);
-                employeeAddress.setText(userData.address + ", " + userData.currentAddress + ", " + userData.landmark);
+                if (userData != null) {
+                    employeeName.setText(userData.firstName + " " +userData.lastName);
+                    employeeID.setText(userData.emplyoeeId);
+                    employeeEmail.setText(userData.emailAddress);
+                    employeeNumber.setText(userData.phoneNumber);
+                    employeeAddress.setText(userData.address + ", " + userData.currentAddress + ", " + userData.landmark);
 
-                for(int i=0; i<reportingManagerList.size();i++){
-                    if(reportingManagerList.get(i).equalsIgnoreCase(userData.reportingManger)){
-                        reportTo = userData.reportingManger;
-                        managerName.setSelection(i);
+                    for(int i=0; i<reportingManagerList.size();i++){
+                        if(reportingManagerList.get(i).equalsIgnoreCase(userData.reportingManger)){
+                            reportTo = userData.reportingManger;
+                            managerName.setSelection(i);
+                        }
                     }
                 }
 
