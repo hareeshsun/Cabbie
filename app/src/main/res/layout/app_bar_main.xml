@@ -33,12 +33,39 @@
           android:gravity="end"
           android:layout_gravity="center">
 
-        <ImageView
-            android:id="@+id/notification"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/notification"
-            android:layout_margin="5dp"/>
+            android:layout_height="match_parent">
+
+          <RelativeLayout
+              android:id="@+id/relative_layout"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+              android:padding="1dp">
+
+            <ImageView
+                android:id="@+id/notification"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/notification"
+                android:layout_margin="5dp"/>
+
+          </RelativeLayout>
+
+          <TextView
+              android:id="@+id/quantityBadge"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/notification_number_boarder"
+              android:gravity="center"
+              android:text="2"
+              android:textColor="@color/white"
+              android:textSize="12sp"
+              android:textStyle="bold"
+              android:visibility="gone"
+              android:layout_alignRight="@id/relative_layout"/>
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/cabRequest"

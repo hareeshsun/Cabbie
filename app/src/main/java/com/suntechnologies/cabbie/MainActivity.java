@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     private FrameLayout frameLayout;
     private ImageView requestCab;
+    public static boolean isNotifyCountVisible = false;
+    public static TextView quantityBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         requestCab = (ImageView) findViewById(R.id.cabRequest);
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
+        quantityBadge = (TextView) findViewById(R.id.quantityBadge);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
