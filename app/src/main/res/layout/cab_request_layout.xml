@@ -247,7 +247,7 @@
             android:background="@color/colorPrimary"
             android:gravity="center"
             android:text="Request Cab"
-            android:id="@+id/cabRequest"
+            android:id="@+id/btnRequest"
             android:textAlignment="gravity"
             android:textAllCaps="false"
             android:textColor="@color/white"

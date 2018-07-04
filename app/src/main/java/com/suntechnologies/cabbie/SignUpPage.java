@@ -39,18 +39,13 @@ public class SignUpPage extends AppCompatActivity {
     Button signUp;
     TextView signIn;
     private Dialog loadingDialog;
-
     private ArrayList<String> designationList = new ArrayList<>();
     private ArrayList<String> reportingManagerList = new ArrayList<>();
     private FirebaseAuth mAuth;
     private static final String TAG = "EmailPassword";
-
-
     private DatabaseReference mDatabase;
     FirebaseDatabase database;
     String firstName, lastName, emailAddress, mobileNumber,address,currentAddress,landmark, password,confirmPassword, employeeId,designation,reportManagerId;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +140,6 @@ public class SignUpPage extends AppCompatActivity {
                 currentAddress = currentAddressTxt.getText().toString();
                 landmark = landmarkTxt.getText().toString();
 
-
-
                 if ( firstName.length() > 0 && lastName.length()>0 && emailAddress.length()>0 && employeeId.length()>0 && mobileNumber.length()>0 && password.length()>0 && confirmPassword.length()>0 && address.length()>0
                         && currentAddress.length()>0 && landmark.length()>0 && !designation.equalsIgnoreCase("Select Designation") && !reportManagerId.equalsIgnoreCase("Select Reporting Manager")) {
 
@@ -210,8 +203,8 @@ public class SignUpPage extends AppCompatActivity {
 
     }
 
-    private void writeNewUser(String uid,String emplyoeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManger,String address,String currentAddress,String landmark) {
-        User user = new User(emplyoeeId,firstName, lastName,phoneNumer,designation,reportingManger,emailId,address,currentAddress,landmark);
+    private void writeNewUser(String uid,String employeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManager,String address,String currentAddress,String landmark) {
+        User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark);
         mDatabase.child(uid).setValue(user);
 
         Intent intent = new Intent(SignUpPage.this, LoginPage.class);

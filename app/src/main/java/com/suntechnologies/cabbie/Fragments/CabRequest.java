@@ -75,7 +75,7 @@ public class CabRequest extends Fragment {
         employeeAddress = (TextView) cabRequestView.findViewById(R.id.employeeAddress);
         pickUpTime = (TextView) cabRequestView.findViewById(R.id.pickUpTime);
         managerName = (Spinner) cabRequestView.findViewById(R.id.managerName);
-        cabRequest = (Button) cabRequestView.findViewById(R.id.cabRequest);
+        cabRequest = (Button) cabRequestView.findViewById(R.id.btnRequest);
 
         SharedPreferences preferences = getContext().getSharedPreferences(USER_TOKEN_KEY,MODE_PRIVATE);
          uid =  preferences.getString(USER_UID, null);
@@ -105,8 +105,8 @@ public class CabRequest extends Fragment {
                     employeeAddress.setText(userData.address + ", " + userData.currentAddress + ", " + userData.landmark);
 
                     for(int i=0; i<reportingManagerList.size();i++){
-                        if(reportingManagerList.get(i).equalsIgnoreCase(userData.reportingManger)){
-                            reportTo = userData.reportingManger;
+                        if(reportingManagerList.get(i).equalsIgnoreCase(userData.reportingManager)){
+                            reportTo = userData.reportingManager;
                             managerName.setSelection(i);
                         }
                     }
@@ -179,7 +179,7 @@ public class CabRequest extends Fragment {
                        ArrayList<Status>statuse = new ArrayList<Status>();
                         statuse.add(new Status("false","false"));
                  String date = new SimpleDateFormat("dd-MMMM-yyyy", Locale.getDefault()).format(new Date());
-                        writeNewUser(requestNmuber,uid,employeeName,userData.employeeId, destination,userData.reportingManger,pickupTime,date);
+                        writeNewUser(requestNmuber,uid,employeeName,userData.employeeId, destination,userData.reportingManager,pickupTime,date);
 
 
             }

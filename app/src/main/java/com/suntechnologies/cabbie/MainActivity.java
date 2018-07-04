@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.suntechnologies.cabbie.DataHolders.UserData;
 import com.suntechnologies.cabbie.Fragments.AccountDetails;
 import com.suntechnologies.cabbie.Fragments.CabRequest;
 import com.suntechnologies.cabbie.Fragments.EmergencyDetails;
@@ -33,12 +34,16 @@ import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.Fragments.OnBoarding;
 import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
 
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static FrameLayout frameLayout;
     private ImageView requestCab;
     public static boolean isNotifyCountVisible = false;
     public static TextView quantityBadge;
+    private UserData userData;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         String USER_TOKEN_KEY = "USERTOKEN";
         SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY,MODE_PRIVATE);
         String USER_UID = "USERUID";
-        String uid = preferences.getString(USER_UID, null);
+        uid = preferences.getString(USER_UID, null);
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
         mDatabase.addValueEventListener(new ValueEventListener()
@@ -76,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null){
+                    userData = dataSnapshot.getValue(UserData.class);
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmployeeFragment(),false);
                 }
@@ -125,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (id == R.id.nav_account) {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new AccountDetails(),true);
+            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new AccountDetails(userData, uid),true);
         } else if (id == R.id.nav_boarding) {
 
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
