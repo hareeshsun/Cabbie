@@ -35,11 +35,16 @@ public EmployeeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 public void onBindViewHolder(EmployeeViewHolder holder, int position) {
     Employee employee = employees.get(position);
         holder.tvName.setText(employee.employee_name);
-        holder.mangerName.setText(employee.empyloyee_manger_name);
+        holder.mangerName.setText(employee.employee_manger_name);
         holder.designation.setText(employee.employee_desitnation);
-        holder.tvStatus.setText(employee.employee_status);
         holder.employeeID.setText(employee.employee_id);
+
+         if(Boolean.parseBoolean(employee.manager_status) && Boolean.parseBoolean(employee.facility_status))
+             holder.imageView.setBackgroundResource(R.drawable.ic_approved);
+         else
+        holder.imageView.setBackgroundResource(R.drawable.ic_pending);
         }
+
 
 @Override
 public int getItemCount() {

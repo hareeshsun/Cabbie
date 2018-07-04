@@ -1,26 +1,108 @@
 package com.suntechnologies.cabbie.Model;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by mithulalr on 6/26/2018.
  */
 
-public class Employee
+public class Employee implements Serializable
 {
     public String employee_name;
     public String employee_id;
-    public String empyloyee_manger_name;
+    public String employee_manger_name;
     public String employee_desitnation;
-    public String employee_status;
+    public String pickuptime;
+    public String manager_status;
+    public String facility_status;
+    public String date;
 
-    Employee(){
+      Employee(){
 
-    }
-    public  Employee(String employee_name, String employee_id, String empyloyee_manger_name, String employee_desitnation, String employee_status){
+      }
+  /*  public  Employee(String employee_name, String employee_id  ,String employee_desitnation,ArrayList<Status>employee_status){
+              this.employee_status =employee_status;
+        this.employee_desitnation = employee_desitnation;
+        this.employee_id = employee_id;
+        this.employee_name = employee_name;
+    }*/
+    public  Employee(String employee_name, String employee_id, String employee_manger_name, String employee_desitnation,String pickuptime,String manager_status,String facility_status ,String date){
         this.employee_name = employee_name;
         this.employee_id = employee_id;
-        this.empyloyee_manger_name = empyloyee_manger_name;
+        this.employee_manger_name = employee_manger_name;
         this.employee_desitnation = employee_desitnation;
-        this.employee_status = employee_status;
+        this.manager_status = manager_status;
+        this.facility_status = facility_status;
+        this.pickuptime = pickuptime;
+        this.date = date;
 
     }
+
+    public String getDate()
+    {
+        return date;
+    }
+
+
+
+    public String getEmployee_desitnation()
+    {
+        return employee_desitnation;
+    }
+
+    public String getEmployee_id()
+    {
+        return employee_id;
+    }
+
+    public String getEmployee_manger_name()
+    {
+        return employee_manger_name;
+    }
+
+    public String getEmployee_name()
+    {
+        return employee_name;
+    }
+
+    public String getPickuptime()
+    {
+        return pickuptime;
+    }
+
+    public void setDate(String date)
+    {
+        this.date = date;
+    }
+
+    public void setEmployee_desitnation(String employee_desitnation)
+    {
+        this.employee_desitnation = employee_desitnation;
+    }
+
+    public void setEmployee_id(String employee_id)
+    {
+        this.employee_id = employee_id;
+    }
+
+    public void setEmployee_manger_name(String employee_manger_name)
+    {
+        this.employee_manger_name = employee_manger_name;
+    }
+
+    public void setEmployee_name(String employee_name)
+    {
+        this.employee_name = employee_name;
+    }
+
+
+
+    public void setPickuptime(String pickuptime)
+    {
+        this.pickuptime = pickuptime;
+    }
+
 }

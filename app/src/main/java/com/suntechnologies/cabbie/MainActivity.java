@@ -35,7 +35,7 @@ import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private FrameLayout frameLayout;
+    public static FrameLayout frameLayout;
     private ImageView requestCab;
     public static boolean isNotifyCountVisible = false;
     public static TextView quantityBadge;
