@@ -1,6 +1,5 @@
 package com.suntechnologies.cabbie.Adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -17,37 +16,36 @@ import java.util.ArrayList;
 
 public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeViewHolder> {
 
-        Context context;
-        ArrayList<Employee> employees;
+    ArrayList<Employee> employees;
 
-public EmployeeAdapter( ArrayList<Employee> employees) {
+    public EmployeeAdapter(ArrayList<Employee> employees) {
         this.employees = employees;
-        }
+    }
 
-@Override
-public EmployeeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public EmployeeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewGroup mainGroup = (ViewGroup) layoutInflater.inflate(R.layout.item, parent, false);
         return new EmployeeViewHolder(mainGroup);
-        }
+    }
 
-@Override
-public void onBindViewHolder(EmployeeViewHolder holder, int position) {
-    Employee employee = employees.get(position);
+    @Override
+    public void onBindViewHolder(EmployeeViewHolder holder, int position) {
+        Employee employee = employees.get(position);
         holder.tvName.setText(employee.employee_name);
         holder.mangerName.setText(employee.employee_manger_name);
         holder.designation.setText(employee.employee_desitnation);
         holder.employeeID.setText(employee.employee_id);
 
-         if(Boolean.parseBoolean(employee.manager_status) && Boolean.parseBoolean(employee.facility_status))
-             holder.imageView.setBackgroundResource(R.drawable.ic_approved);
-         else
-        holder.imageView.setBackgroundResource(R.drawable.ic_pending);
-        }
+        if (Boolean.parseBoolean(employee.manager_status) && Boolean.parseBoolean(employee.facility_status))
+            holder.imageView.setBackgroundResource(R.drawable.ic_approved);
+        else
+            holder.imageView.setBackgroundResource(R.drawable.ic_pending);
+    }
 
 
-@Override
-public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return (null != employees ? employees.size() : 0);
-        }
-        }
+    }
+}

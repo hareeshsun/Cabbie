@@ -30,24 +30,25 @@ import java.util.ArrayList;
  */
 
 public class EmployeeFragment extends Fragment {
+
     RecyclerView rv_cycle;
     EmployeeAdapter employeeAdapter;
-    ArrayList<Employee>customerClosedActionArrayList = new ArrayList<>();
-    String  requestId;
-    String  requestDate;
+    ArrayList<Employee> customerClosedActionArrayList = new ArrayList<>();
+    String requestId;
+    String requestDate;
     String uid;
     private DatabaseReference mDatabase;
     boolean employeeflag = false;
+
     public EmployeeFragment() {
     }
 
-    public EmployeeFragment(String requestId ,String requestDate, String uid) {
+    public EmployeeFragment(String requestId, String requestDate, String uid) {
         this.requestId = requestId;
         this.requestDate = requestDate;
         this.uid = uid;
         employeeflag = true;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,52 +58,35 @@ public class EmployeeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.employee_home_page,container, false);
+        View rootView = inflater.inflate(R.layout.employee_home_page, container, false);
         rv_cycle = (RecyclerView) rootView.findViewById(R.id.rv_cycle);
 
-
-        if(customerClosedActionArrayList != null && customerClosedActionArrayList.size() > 0){
+        if (customerClosedActionArrayList != null && customerClosedActionArrayList.size() > 0) {
             customerClosedActionArrayList.clear();
         }
-        if(employeeflag)
-        {
-
-
-            mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/"+uid+"/"+requestId + "/" + requestDate);
-
-            mDatabase.addValueEventListener(new ValueEventListener()
-            {
+        if (employeeflag) {
+            mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + uid + "/" + requestId + "/" + requestDate);
+            mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d("emplyoeestatus", String.valueOf(dataSnapshot));
-                   Employee employee = dataSnapshot.getValue(Employee.class);
-
-
-
-                     customerClosedActionArrayList.add(new Employee(employee.employee_name,employee.employee_id,employee.employee_manger_name,employee.employee_desitnation,
-                             employee.pickuptime,employee.manager_status,employee.facility_status,employee.date));
-
-                     employeeAdapter = new EmployeeAdapter(customerClosedActionArrayList);
+                    Employee employee = dataSnapshot.getValue(Employee.class);
+                    customerClosedActionArrayList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
+                            employee.pickuptime, employee.manager_status, employee.facility_status, employee.date));
+                    employeeAdapter = new EmployeeAdapter(customerClosedActionArrayList);
                     rv_cycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                     rv_cycle.setHasFixedSize(true);
                     rv_cycle.addItemDecoration(new DividerItemDecoration(rv_cycle.getContext(), LinearLayoutManager.VERTICAL));
                     rv_cycle.setAdapter(employeeAdapter);
-
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError)
-                {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.d("emplyoeestatus", String.valueOf(databaseError));
-
                 }
             });
 
-
-
         }
-
         return rootView;
     }
 

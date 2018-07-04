@@ -12,8 +12,7 @@ import com.suntechnologies.cabbie.R;
  * Created by mithulalr on 6/26/2018.
  */
 
-public class EmployeeViewHolder extends RecyclerView.ViewHolder
-{
+public class EmployeeViewHolder extends RecyclerView.ViewHolder {
 
     public TextView tvName;
     public TextView tvStatus;
@@ -22,8 +21,7 @@ public class EmployeeViewHolder extends RecyclerView.ViewHolder
     public TextView employeeID;
     public ImageView imageView;
 
-    public EmployeeViewHolder(View itemView)
-    {
+    public EmployeeViewHolder(View itemView) {
         super(itemView);
         tvName = (TextView) itemView.findViewById(R.id.employee_name);
         tvStatus = (TextView) itemView.findViewById(R.id.status);
@@ -31,9 +29,6 @@ public class EmployeeViewHolder extends RecyclerView.ViewHolder
         mangerName = (TextView) itemView.findViewById(R.id.mangerName);
         employeeID = (TextView) itemView.findViewById(R.id.employeeID);
         imageView = (ImageView) itemView.findViewById(R.id.imageView);
-
-
-
     }
 
 }
