@@ -95,6 +95,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(), false);
                 } else {
+
+
+
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     if (firebaseUser != null) {
                         database.getReference("admin").child("registrationToken").setValue(registrationToken);

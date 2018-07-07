@@ -56,6 +56,9 @@ public class LoginPage extends AppCompatActivity {
         final Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
 
+        email.setText("admin@suntechnologies.com");
+        password.setText("Reset123");
+
         loadingDialog = new SpotsDialog(this,"Logging...");
         preferences = getSharedPreferences(USER_TOKEN_KEY, Context.MODE_PRIVATE);
         editor =preferences.edit();
