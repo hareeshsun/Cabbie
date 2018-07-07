@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
+import com.suntechnologies.cabbie.Model.Manager;
 import com.suntechnologies.cabbie.Model.User;
 
 import java.util.ArrayList;
@@ -46,6 +47,10 @@ public class SignUpPage extends AppCompatActivity {
     private DatabaseReference mDatabase;
     FirebaseDatabase database;
     String firstName, lastName, emailAddress, mobileNumber,address,currentAddress,landmark, password,confirmPassword, employeeId,designation,reportManagerId;
+    String USER_DATA = "usersData";
+    String MANAGER_DATA = "managerData";
+    String STRING_MANAGER = "Manager";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +59,7 @@ public class SignUpPage extends AppCompatActivity {
         setContentView(R.layout.sign_up);
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        mDatabase = database.getReference("usersData");
+       // mDatabase = database.getReference("usersData");
 
         firstNameTxt = (EditText) findViewById(R.id.firstName);
         lastNameTxt = (EditText) findViewById(R.id.lastName);
@@ -204,14 +209,18 @@ public class SignUpPage extends AppCompatActivity {
     }
 
     private void writeNewUser(String uid,String employeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManager,String address,String currentAddress,String landmark) {
+
+        if(designation.contains(STRING_MANAGER)){
+            Manager manager = new Manager(firstName,emailId,uid,"");
+            database.getReference(MANAGER_DATA).child(uid).setValue(manager);
+        }
+
         User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark);
-        mDatabase.child(uid).setValue(user);
+        database.getReference(USER_DATA).child(uid).setValue(user);
 
         Intent intent = new Intent(SignUpPage.this, LoginPage.class);
         startActivity(intent);
 
-
     }
-
 
 }

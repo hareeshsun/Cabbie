@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,11 +41,13 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static FrameLayout frameLayout;
-    private ImageView requestCab;
     public static boolean isNotifyCountVisible = false;
     public static TextView quantityBadge;
     private UserData userData;
-    private String uid;
+    private String uid, registrationToken;
+    private FirebaseAuth auth;
+    DatabaseReference mDatabase;
+    FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +61,12 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         actionBar.setTitle(R.string.header_name);
 
         ImageView notification = (ImageView) findViewById(R.id.notification);
-        requestCab = (ImageView) findViewById(R.id.cabRequest);
+        ImageView requestCab = (ImageView) findViewById(R.id.cabRequest);
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         quantityBadge = (TextView) findViewById(R.id.quantityBadge);
 
+        auth = FirebaseAuth.getInstance();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
@@ -71,28 +76,36 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         navigationView.setNavigationItemSelectedListener(this);
 
         String USER_TOKEN_KEY = "USERTOKEN";
-        SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY,MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY, MODE_PRIVATE);
         String USER_UID = "USERUID";
         uid = preferences.getString(USER_UID, null);
 
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
-        mDatabase.addValueEventListener(new ValueEventListener()
-        {
+        String REGISTRATION_KEY = "REGISTRATION_KEY";
+        String REGISTRATION_VALUE = "REGISTRATION_VALUE";
+        SharedPreferences preferences1 = getSharedPreferences(REGISTRATION_KEY, MODE_PRIVATE);
+        registrationToken = preferences1.getString(REGISTRATION_VALUE, null);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
+        database = FirebaseDatabase.getInstance();
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() != null){
+                if (dataSnapshot.getValue() != null) {
                     userData = dataSnapshot.getValue(UserData.class);
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmployeeFragment(),false);
-                }
-                else {
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(), false);
+                } else {
+                    FirebaseUser firebaseUser = auth.getCurrentUser();
+                    if (firebaseUser != null) {
+                        database.getReference("admin").child("registrationToken").setValue(registrationToken);
+                    }
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new FacilityFragment(),true);
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new FacilityFragment(), true);
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
@@ -100,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             @Override
             public void onClick(View view) {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new CabRequest(),true);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new CabRequest(), true);
             }
         });
 
@@ -108,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             @Override
             public void onClick(View view) {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new Notification(),true);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new Notification(), true);
             }
         });
 
@@ -131,19 +144,18 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (id == R.id.nav_account) {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new AccountDetails(userData, uid),true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new AccountDetails(userData, uid), true);
         } else if (id == R.id.nav_boarding) {
-
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new OnBoarding(),true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new OnBoarding(), true);
         } else if (id == R.id.nav_previous) {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new PreviousRideDetails(),true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new PreviousRideDetails(), true);
 
         } else if (id == R.id.nav_emergency) {
 
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this,frameLayout.getId(),new EmergencyDetails(),true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmergencyDetails(), true);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(MainActivity.this, LoginPage.class);
             startActivity(intent);

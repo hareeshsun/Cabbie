@@ -39,7 +39,6 @@ public class AccountDetails extends Fragment {
     public AccountDetails(UserData userData, String uid) {
         this.userData =  userData;
         this.uid = uid;
-        System.out.println("Drunken Monkey : " + userData.reportingManager);
     }
 
     @Override

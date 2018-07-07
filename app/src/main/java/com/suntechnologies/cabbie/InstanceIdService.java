@@ -3,6 +3,9 @@ package com.suntechnologies.cabbie;
 /**
  * Created by mithulalr on 7/4/2018.
  */
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -18,10 +21,20 @@ public class InstanceIdService extends FirebaseInstanceIdService {
         super();
     }
 
+    SharedPreferences.Editor editor;
+    private String REGISTRATION_KEY = "REGISTRATION_KEY";
+    private String REGISTRATION_VALUE = "REGISTRATION_VALUE";
+    SharedPreferences preferences;
+
     @Override
     public void onTokenRefresh() {
         super.onTokenRefresh();
         String token = FirebaseInstanceId.getInstance().getToken();
+
+        preferences = getSharedPreferences(REGISTRATION_KEY, Context.MODE_PRIVATE);
+        editor =preferences.edit();
+        editor.putString(REGISTRATION_VALUE,token);
+        editor.apply();
 
         //sends this token to the server
         sendToServer(token);

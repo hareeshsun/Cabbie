@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import dmax.dialog.SpotsDialog;
 
@@ -39,6 +41,8 @@ public class LoginPage extends AppCompatActivity {
     private String USER_UID = "USERUID";
     SharedPreferences preferences;
     private Dialog loadingDialog;
+    private DatabaseReference mDatabase;
+    FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +50,11 @@ public class LoginPage extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login_page);
         mAuth = FirebaseAuth.getInstance();
-
+        database = FirebaseDatabase.getInstance();
         final EditText email =  (EditText) findViewById(R.id.email);
         final EditText password =  (EditText) findViewById(R.id.password);
         final Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
-
-        email.setText("krishnaregar390@gmail.com");
-        password.setText("123456");
 
         loadingDialog = new SpotsDialog(this,"Logging...");
         preferences = getSharedPreferences(USER_TOKEN_KEY, Context.MODE_PRIVATE);
