@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:hint="@string/email_address"
+            android:hint="Username"
             android:textSize="18sp"
             android:padding="10dp"
             android:maxLines="1"

@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/white_background_with_black_border"
-                android:hint="@string/email_address"
+                android:hint="Username"
                 android:inputType="textEmailAddress"
                 android:padding="5dp"
                 android:textColor="@color/black"

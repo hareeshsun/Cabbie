@@ -154,17 +154,18 @@ public class SignUpPage extends AppCompatActivity {
                     }else if(!lastName.matches("[a-zA-Z]*")){
                         lastNameTxt.setError("Invalid name");
 
-                    }else if(!emailAddress.matches("[a-zA-Z0-9._-]+@[a-z]+.[a-z]+")){
+                    }
+                   /* else if(!emailAddress.matches("[a-zA-Z0-9._-]+@[a-z]+.[a-z]+")){
                         emailAddressTxt.setError("Invalid Email Address");
 
-                    }
+                    }*/
                     else if(mobileNumber.length()!=10){
                         mobileNumberTxt.setError("Invalid mobile number");
                     }else if(!password.equals(confirmPassword)){
                         Toast.makeText(SignUpPage.this,"password and confirmed password is not matching!",Toast.LENGTH_SHORT).show();
                     }else{
                         loadingDialog.show();
-                        mAuth.createUserWithEmailAndPassword(emailAddress, password)
+                        mAuth.createUserWithEmailAndPassword(emailAddress.concat("@suntechnologies.com"), password)
                                 .addOnCompleteListener(SignUpPage.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {

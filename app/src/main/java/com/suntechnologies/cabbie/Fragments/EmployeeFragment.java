@@ -1,5 +1,6 @@
 package com.suntechnologies.cabbie.Fragments;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import com.suntechnologies.cabbie.Model.Employee;
 import com.suntechnologies.cabbie.Model.Status;
 import com.suntechnologies.cabbie.Model.User;
 import com.suntechnologies.cabbie.R;
+import com.suntechnologies.cabbie.SunCabbie;
+import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
 
 import java.util.ArrayList;
 
@@ -39,7 +42,7 @@ public class EmployeeFragment extends Fragment {
     String uid;
     private DatabaseReference mDatabase;
     boolean employeeflag = false;
-
+   Context context;
     public EmployeeFragment() {
     }
 
@@ -49,10 +52,15 @@ public class EmployeeFragment extends Fragment {
         this.uid = uid;
         employeeflag = true;
     }
+    public EmployeeFragment( String uid) {
+        this.uid = uid;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = getActivity();
+        FirebaseNotification.addNotificationKey(this.uid, context);
     }
 
     @Nullable
@@ -61,11 +69,12 @@ public class EmployeeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.employee_home_page, container, false);
         rv_cycle = (RecyclerView) rootView.findViewById(R.id.rv_cycle);
 
+
         if (customerClosedActionArrayList != null && customerClosedActionArrayList.size() > 0) {
             customerClosedActionArrayList.clear();
         }
         if (employeeflag) {
-            mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + uid + "/" + requestId + "/" + requestDate);
+          /*  mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + uid + "/" + requestId + "/" + requestDate);
             mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -84,7 +93,7 @@ public class EmployeeFragment extends Fragment {
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.d("emplyoeestatus", String.valueOf(databaseError));
                 }
-            });
+            });*/
 
         }
         return rootView;

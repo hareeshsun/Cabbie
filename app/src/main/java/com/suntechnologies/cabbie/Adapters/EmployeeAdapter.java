@@ -37,10 +37,16 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeViewHolder> {
         holder.designation.setText(employee.employee_desitnation);
         holder.employeeID.setText(employee.employee_id);
 
-        if (Boolean.parseBoolean(employee.manager_status) && Boolean.parseBoolean(employee.facility_status))
+        if (Boolean.parseBoolean(employee.manager_status) && Boolean.parseBoolean(employee.facility_status)){
             holder.imageView.setBackgroundResource(R.drawable.ic_approved);
-        else
+            holder.imageView.setImageResource(R.drawable.ic_approved);
+        }
+
+        else{
             holder.imageView.setBackgroundResource(R.drawable.ic_pending);
+            holder.imageView.setImageResource(R.drawable.ic_pending);
+        }
+
     }
 
 
