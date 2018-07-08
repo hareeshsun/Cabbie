@@ -9,22 +9,25 @@ import java.io.Serializable;
 public class FacilityDataContainer implements Serializable {
 
     public String date;
-    public String destination;
-    public String employeeID;
-    public String employeeManager;
-    public String employeeName;
-    public String facilityStatus;
-    public String managerStatus;
-    public String pickUpTime;
+    public String employee_desitnation;
+    public String employee_id;
+    public String employee_manger_name;
+    public String employee_name;
+    public String facility_status;
+    public String manager_status;
+    public String pickuptime;
 
-    public FacilityDataContainer(String date, String destination, String employeeID, String employeeManager, String employeeName, String facilityStatus, String managerStatus, String pickUpTime) {
+    public FacilityDataContainer() {
+    }
+
+    public FacilityDataContainer(String date, String employee_desitnation, String employee_id, String employee_manger_name, String employee_name, String facility_status, String manager_status, String pickuptime) {
         this.date = date;
-        this.destination = destination;
-        this.employeeID = employeeID;
-        this.employeeManager = employeeManager;
-        this.employeeName = employeeName;
-        this.facilityStatus = facilityStatus;
-        this.managerStatus = managerStatus;
-        this.pickUpTime = pickUpTime;
+        this.employee_desitnation = employee_desitnation;
+        this.employee_id = employee_id;
+        this.employee_manger_name = employee_manger_name;
+        this.employee_name = employee_name;
+        this.facility_status = facility_status;
+        this.manager_status = manager_status;
+        this.pickuptime = pickuptime;
     }
 }
