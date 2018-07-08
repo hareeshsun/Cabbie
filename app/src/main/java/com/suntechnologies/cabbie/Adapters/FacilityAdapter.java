@@ -32,13 +32,13 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder> {
     @Override
     public void onBindViewHolder(FacilityViewHolder holder, int position) {
         FacilityDataContainer cabRequestList = facilityDataList.get(position);
-        holder.employeeName.setText(cabRequestList.employeeName);
-        holder.employeeID.setText(cabRequestList.employeeID);
-        holder.manager.setText(cabRequestList.employeeManager);
-        holder.destination.setText(cabRequestList.destination);
-        holder.approvedBy.setText(cabRequestList.managerStatus);
+        holder.employeeName.setText(cabRequestList.employee_name);
+        holder.employeeID.setText(cabRequestList.employee_id);
+        holder.destination.setText(cabRequestList.employee_desitnation);
+        String formattedManager = "by %s";
+        holder.approvedBy.setText(String.format(formattedManager,cabRequestList.employee_manger_name));
 
-        if(cabRequestList.managerStatus.equalsIgnoreCase("true")){
+        if(cabRequestList.manager_status != null && cabRequestList.manager_status.equalsIgnoreCase("true")){
             holder.stamp.setImageResource(R.drawable.ic_approved);
         }
         else {

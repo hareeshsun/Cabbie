@@ -16,7 +16,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.suntechnologies.cabbie.Adapters.EmployeeAdapter;
 import com.suntechnologies.cabbie.Adapters.FacilityAdapter;
 import com.suntechnologies.cabbie.DataHolders.FacilityDataContainer;
 import com.suntechnologies.cabbie.HelperMethods;
@@ -25,7 +24,6 @@ import com.suntechnologies.cabbie.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.zip.Inflater;
 
 /**
  * Created by hareeshs on 02-07-2018.
@@ -40,7 +38,7 @@ public class FacilityFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.facility_layout, container, false);
         facilityRecyclerView = (RecyclerView) rootView.findViewById(R.id.facilityRecyclerView);
 
@@ -54,7 +52,7 @@ public class FacilityFragment extends Fragment {
         String formattedMonth = HelperMethods.getStringFormattedMonth(month);
         String formattedDay = Integer.toString(day);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(formattedYear).child(formattedMonth).child("07");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(formattedYear).child(formattedMonth).child("08");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -64,6 +62,26 @@ public class FacilityFragment extends Fragment {
                 cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.destination, dataContainer.employeeID,
                                 dataContainer.employeeManager, dataContainer.employeeName, dataContainer.facilityStatus, dataContainer.managerStatus,
                                 dataContainer.pickUpTime));*/
+
+                for (DataSnapshot uniqueSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot employeeId : uniqueSnapshot.getChildren()) {
+                        FacilityDataContainer dataContainer = employeeId.getValue(FacilityDataContainer.class);
+                        if (dataContainer != null)
+                            cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.employee_desitnation, dataContainer.employee_id,
+                                    dataContainer.employee_manger_name, dataContainer.employee_name, dataContainer.facility_status, dataContainer.manager_status,
+                                    dataContainer.pickuptime
+                            ));
+                    }
+                }
+
+/*                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                    FacilityDataContainer dataContainer = dataSnapshot1.getValue(FacilityDataContainer.class);
+                    if(dataContainer != null)
+                    cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.destination, dataContainer.employeeID,
+                            dataContainer.employeeManager, dataContainer.employeeName, dataContainer.facilityStatus, dataContainer.managerStatus,
+                            dataContainer.pickUpTime));
+                }*/
+
 
                 facilityAdapter = new FacilityAdapter(cabRequestList);
                 facilityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
