@@ -14,7 +14,10 @@ public class RideEmployeeDetail
     public String  destination;
     public String  pickupTime;
 
-    public RideEmployeeDetail(String vehicleNumber, String driverName, String vehicleModel, String driverNumber,String rideNumber,String destination,String pickupTime) {
+    public RideEmployeeDetail() {
+    }
+
+    public RideEmployeeDetail(String vehicleNumber, String driverName, String vehicleModel, String driverNumber, String rideNumber, String destination, String pickupTime) {
         this.vehicleNumber = vehicleNumber;
         this.driverName = driverName;
         this.vehicleModel = vehicleModel;

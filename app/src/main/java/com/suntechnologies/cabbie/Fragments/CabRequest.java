@@ -420,7 +420,7 @@ public class CabRequest extends Fragment
                         //  NotificationUser(notification);
                         if(Integer.parseInt(responseId)>0){
                             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new EmployeeFragment(managerToken), true);
+                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new EmployeeFragment(managerToken, userData.employeeId), true);
 
                             Log.d("response", String.valueOf(responseId));
 

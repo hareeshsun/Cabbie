@@ -3,14 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:layout_margin="10dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="On Boarding Details"
-        android:textColor="@color/black"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="20sp"
-        android:gravity="center"/>
+        android:textStyle="bold"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvOnBoarding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

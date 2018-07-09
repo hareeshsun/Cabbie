@@ -20,13 +20,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.suntechnologies.cabbie.Adapters.EmployeeAdapter;
 import com.suntechnologies.cabbie.Model.Employee;
-import com.suntechnologies.cabbie.Model.Status;
-import com.suntechnologies.cabbie.Model.User;
 import com.suntechnologies.cabbie.R;
-import com.suntechnologies.cabbie.SunCabbie;
 import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by hareeshs on 25-06-2018.
@@ -36,25 +36,21 @@ public class EmployeeFragment extends Fragment {
 
     RecyclerView rv_cycle;
     EmployeeAdapter employeeAdapter;
-    ArrayList<Employee> customerClosedActionArrayList = new ArrayList<>();
+    ArrayList<Employee> employeeCabRequestList = new ArrayList<>();
     String requestId;
     String requestDate;
     String uid;
     private DatabaseReference mDatabase;
     boolean employeeflag = false;
-   Context context;
+    Context context;
+    String employeeID;
+
     public EmployeeFragment() {
     }
 
-    public EmployeeFragment(String requestId, String requestDate, String uid) {
-        this.requestId = requestId;
-        this.requestDate = requestDate;
+    public EmployeeFragment(String uid, String employeeID) {
         this.uid = uid;
-
-    }
-    public EmployeeFragment( String uid) {
-        employeeflag = true;
-        this.uid = uid;
+        this.employeeID = employeeID;
     }
 
     @Override
@@ -71,34 +67,34 @@ public class EmployeeFragment extends Fragment {
         rv_cycle = (RecyclerView) rootView.findViewById(R.id.rv_cycle);
 
 
-        if (customerClosedActionArrayList != null && customerClosedActionArrayList.size() > 0) {
-            customerClosedActionArrayList.clear();
+        if (employeeCabRequestList != null && employeeCabRequestList.size() > 0) {
+            employeeCabRequestList.clear();
         }
-        if (employeeflag) {
-            FirebaseNotification.addNotificationKey(uid, context, "test","Eating fool");
 
-          /*  mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + uid + "/" + requestId + "/" + requestDate);
-            mDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("emplyoeestatus", String.valueOf(dataSnapshot));
-                    Employee employee = dataSnapshot.getValue(Employee.class);
-                    customerClosedActionArrayList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
-                            employee.pickuptime, employee.manager_status, employee.facility_status, employee.date));
-                    employeeAdapter = new EmployeeAdapter(customerClosedActionArrayList);
-                    rv_cycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-                    rv_cycle.setHasFixedSize(true);
-                    rv_cycle.addItemDecoration(new DividerItemDecoration(rv_cycle.getContext(), LinearLayoutManager.VERTICAL));
-                    rv_cycle.setAdapter(employeeAdapter);
-                }
+        String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
+        String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
+        String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d("emplyoeestatus", String.valueOf(databaseError));
-                }
-            });*/
+        mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + year + "/" + month + "/" + day + "/"+ uid + "/" + employeeID);
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Employee employee = dataSnapshot.getValue(Employee.class);
+                employeeCabRequestList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
+                        employee.manager_status, employee.facility_status, employee.pickuptime, employee.date, employee.registrationToken, employee.uid));
+                employeeAdapter = new EmployeeAdapter(employeeCabRequestList ,EmployeeFragment.this);
+                rv_cycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+                rv_cycle.setHasFixedSize(true);
+                rv_cycle.setAdapter(employeeAdapter);
+            }
 
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("emplyoeestatus", String.valueOf(databaseError));
+            }
+        });
+
+
         return rootView;
     }
 
