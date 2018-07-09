@@ -39,7 +39,7 @@ import dmax.dialog.SpotsDialog;
 public class FirebaseNotification
 {
     private static  String test = "";
-    static Dialog loadingDialog;
+   // static Dialog loadingDialog;
 
     public  static  void  addNotificationKey(
             String registrationId, Context  Context,String title,String body) {
@@ -94,12 +94,12 @@ public class FirebaseNotification
     public  static String not(final String notificationKey, String registrationToken, final Context context)
     {
     /*Post data*/
-        loadingDialog = new SpotsDialog(context,"Logging...");
+     //   loadingDialog = new SpotsDialog(context,"Logging...");
         final String notkey;
         final RequestQueue requestQueue;
         notkey = "";
         requestQueue = Volley.newRequestQueue(context);
-        loadingDialog.show();
+     //   loadingDialog.show();
         String URL = "https://fcm.googleapis.com/fcm/notification";
 
         JSONObject data = new JSONObject();
@@ -126,7 +126,7 @@ public class FirebaseNotification
 
                         if (notification != null)
                         {
-                            loadingDialog.dismiss();
+                   //         loadingDialog.dismiss();
                             test = notification;
                           //  addNotificationKey(notification,context);
                             //  NotificationUser(notification);
@@ -148,7 +148,7 @@ public class FirebaseNotification
                     @Override
                     public void onErrorResponse(VolleyError error)
                     {
-                        loadingDialog.dismiss();
+                //        loadingDialog.dismiss();
                         //   Handle Error
                     }
                 })

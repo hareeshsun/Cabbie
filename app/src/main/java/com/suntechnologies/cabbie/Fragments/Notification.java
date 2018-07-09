@@ -48,6 +48,10 @@ public class Notification extends Fragment {
         this.userId = userId;
 
     }
+    public Notification() {
+
+
+    }
 
     @Nullable
     @Override
