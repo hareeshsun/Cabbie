@@ -50,9 +50,10 @@ public class EmployeeFragment extends Fragment {
         this.requestId = requestId;
         this.requestDate = requestDate;
         this.uid = uid;
-        employeeflag = true;
+
     }
     public EmployeeFragment( String uid) {
+        employeeflag = true;
         this.uid = uid;
     }
 
@@ -60,7 +61,7 @@ public class EmployeeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getActivity();
-        FirebaseNotification.addNotificationKey(this.uid, context);
+
     }
 
     @Nullable
@@ -74,6 +75,8 @@ public class EmployeeFragment extends Fragment {
             customerClosedActionArrayList.clear();
         }
         if (employeeflag) {
+            FirebaseNotification.addNotificationKey(uid, context, "test","Eating fool");
+
           /*  mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + uid + "/" + requestId + "/" + requestDate);
             mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override

@@ -1,5 +1,6 @@
 package com.suntechnologies.cabbie.Fragments;
 
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,6 +40,7 @@ import com.suntechnologies.cabbie.Model.Employee;
 import com.suntechnologies.cabbie.Model.Status;
 import com.suntechnologies.cabbie.Model.User;
 import com.suntechnologies.cabbie.R;
+import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,6 +54,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+
+import dmax.dialog.SpotsDialog;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -68,14 +72,15 @@ public class CabRequest extends Fragment
     Button cabRequest;
     private String USER_TOKEN_KEY = "USERTOKEN";
     private String USER_UID = "USERUID";
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase,admindata,managerData;
     private User userData;
     String reportTo;
     String pickupTime;
     String uid;
-    String key;
     Context mContext;
+    String adminToken,managerToken;
     private ArrayList<String> reportingManagerList = new ArrayList<>();
+    private Dialog loadingDialog;
 
     public CabRequest()
     {
@@ -88,6 +93,7 @@ public class CabRequest extends Fragment
     {
         View cabRequestView = inflater.inflate(R.layout.cab_request_layout, container, false);
         mContext = getActivity();
+        loadingDialog = new SpotsDialog(mContext,"Logging...");
         employeeName = (TextView) cabRequestView.findViewById(R.id.employee_name);
         employeeID = (TextView) cabRequestView.findViewById(R.id.employeeID);
         employeeEmail = (TextView) cabRequestView.findViewById(R.id.employeeEmail);
@@ -96,7 +102,7 @@ public class CabRequest extends Fragment
         pickUpTime = (TextView) cabRequestView.findViewById(R.id.pickUpTime);
         managerName = (Spinner) cabRequestView.findViewById(R.id.managerName);
         cabRequest = (Button) cabRequestView.findViewById(R.id.btnRequest);
-
+        loadingDialog.show();
         SharedPreferences preferences = getContext().getSharedPreferences(USER_TOKEN_KEY, MODE_PRIVATE);
         uid = preferences.getString(USER_UID, null);
 
@@ -108,7 +114,28 @@ public class CabRequest extends Fragment
         reportingManagerList.add("Syed");
         reportingManagerList.add("Jaydeep");
 
+
+
+
         mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
+        admindata = FirebaseDatabase.getInstance().getReference("admin/");
+
+
+        admindata.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                adminToken = dataSnapshot.child("registrationToken").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
+
 
         mDatabase.addValueEventListener(new ValueEventListener()
         {
@@ -119,6 +146,8 @@ public class CabRequest extends Fragment
                 userData = dataSnapshot.getValue(User.class);
                 if (userData != null)
                 {
+
+                    loadingDialog.dismiss();
                     employeeName.setText(userData.firstName + " " + userData.lastName);
                     employeeID.setText(userData.employeeId);
                     employeeEmail.setText(userData.emailAddress);
@@ -135,6 +164,8 @@ public class CabRequest extends Fragment
                     }
                 }
 
+
+
                 managerName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                 {
                     @Override
@@ -149,6 +180,28 @@ public class CabRequest extends Fragment
 
                     }
                 });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
+        managerData = FirebaseDatabase.getInstance().getReference("managerData/");
+        managerData.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+
+              /*  if(dataSnapshot.child(reportTo).child("registrationToken").getValue().toString() != null)
+                {
+                    managerToken = dataSnapshot.child(reportTo).child("registrationToken").getValue().toString();
+                }
+
+*/
+
             }
 
             @Override
@@ -218,9 +271,22 @@ public class CabRequest extends Fragment
     private void writeNewUser(String year, String month, String day, String requestNmuber, String uid, String employeeName, String emplyoeeId, String destination, String reportingManger, String pickupTime, String date)
     {
         mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + year + "/" + month + "/" + day + "/" + uid);
-        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination, pickupTime, "false", "false", date);
+        Employee employee = new Employee(employeeName, emplyoeeId,uid, reportingManger, destination, pickupTime, "false", "false", date,userData.registrationToken);
         mDatabase.child(emplyoeeId).setValue(employee);
-        not("teswdfdreretreretesdfsfdtw", "e3RK5uKtAyc:APA91bF_BIsjm-kfCvkVYZFx4J_jD67E8_t29twQA3d8VwJM3e_-aKFEiOqLXwK7RPwpyoewtt_ePXD8qC7B2eSCyYx9tdbRd0T-lyy4K1_idAUuguEurwEdS4eRIbVHNyQ9SKeYsTnBWvpauaXx0H_EVW1O7HxjVA");
+
+
+       // Log.d("sdfsf",managerToken);
+      String notificationKey =  FirebaseNotification.not(String.valueOf(gen()), adminToken,getActivity());
+    //   Log.d("sdfsf",notificationKey);
+       // FirebaseNotification.addNotificationKey(notificationKey,getActivity(),"Cab request","Manger and faclity Team");
+        if(notificationKey !=null && notificationKey.length()>0){
+            notificationUser(notificationKey, "Cab Reqest ","I need for cab ",getActivity());
+        }else{
+          //  HelperMethods.showDialog(getActivity(),"Error","Something went wrong...");
+
+        }
+
+
     }
 
     public int gen()
@@ -229,9 +295,10 @@ public class CabRequest extends Fragment
         return 10000 + r.nextInt(20000);
     }
 
-    void not(final String notificationKey, String registrationToken)
+ /*   String not(final String notificationKey, String registrationToken)
     {
-    /*Post data*/
+    *//*Post data*//*
+    final String test = "";
 
         final RequestQueue requestQueue;
         requestQueue = Volley.newRequestQueue(getActivity());
@@ -258,19 +325,19 @@ public class CabRequest extends Fragment
                     {
 
                         String notification = response.optString("notification_key");
+                        test = notification;
                         if (notification != null)
                         {
                             //  NotificationUser(notification);
                             // NotificationUser("APA91bEzZ2cSZMOiBOsol5_rCWnwqkvtjZjbo_x8FoC4Nmn6eLPybJjbbO1144zPRtzqBXqzRUmyRuJe5FUWKW5eWxPcvZU0N0ymYA5iQjeqLhdar90agCSuKfXdEG-1iLyHHPlFSPXT63bunMUBZzjzzOlFDMX5oQ");
-                            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            HelperMethods.replaceFragment(mContext, MainActivity.frameLayout.getId(), new EmployeeFragment(notification), true);
+
 
                             //  FirebaseNotification.addNotificationKey(notification,mContext);
 
                         }
 
                         Log.d("test", String.valueOf(notification));
-                        /*Post data*/
+                        *//*Post data*//*
 
                     }
                 },
@@ -296,10 +363,11 @@ public class CabRequest extends Fragment
             }
         };
         requestQueue.add(postRequest);
+        return test;
 
-    }
+    }*/
 
-    void NotificationUser(String notification)
+    void notificationUser(String notification,String title,String body,Context mContext)
     {
      /*Post data*/
         final RequestQueue requestQueue;
@@ -312,8 +380,8 @@ public class CabRequest extends Fragment
             data.put("to", notification);
             Map<String, String> jsonParams = new HashMap<String, String>();
 
-            jsonParams.put("title", "RequestFormanagerCab");
-            jsonParams.put("body", "Managerisaaprval ");
+            jsonParams.put("title", title);
+            jsonParams.put("body", body);
             // data.put(new JSONObject(jsonParams));
             data.put("notification", new JSONObject(jsonParams));
 
@@ -333,9 +401,17 @@ public class CabRequest extends Fragment
                     {
 
 
-                        //    String notification = response.optString("notification_key");
+                            String responseId = response.optString("success");
                         //  NotificationUser(notification);
-                        Log.d("response", String.valueOf(response));
+                        if(Integer.parseInt(responseId)>0){
+                            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new EmployeeFragment(managerToken), true);
+
+                            Log.d("response", String.valueOf(responseId));
+
+                        }
+
+
                     }
                 },
                 new Response.ErrorListener()

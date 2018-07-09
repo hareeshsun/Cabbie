@@ -5,6 +5,7 @@ package com.suntechnologies.cabbie;
  */
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -35,7 +36,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
         editor =preferences.edit();
         editor.putString(REGISTRATION_VALUE,token);
         editor.apply();
-
+        Log.d("Regstration token ",token);
         //sends this token to the server
         sendToServer(token);
     }

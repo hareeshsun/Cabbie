@@ -2,6 +2,7 @@ package com.suntechnologies.cabbie;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -210,13 +211,17 @@ public class SignUpPage extends AppCompatActivity {
     }
 
     private void writeNewUser(String uid,String employeeId,String emailId, String firstName ,String lastName,String phoneNumer,String designation ,String reportingManager,String address,String currentAddress,String landmark) {
+        String REGISTRATION_KEY = "REGISTRATION_KEY";
+        String REGISTRATION_VALUE = "REGISTRATION_VALUE";
+        SharedPreferences preferences1 = getSharedPreferences(REGISTRATION_KEY, MODE_PRIVATE);
+        String  registrationToken = preferences1.getString(REGISTRATION_VALUE, null);
 
         if(designation.contains(STRING_MANAGER)){
-            Manager manager = new Manager(firstName,emailId,uid,"");
-            database.getReference(MANAGER_DATA).child(uid).setValue(manager);
+            Manager manager = new Manager(firstName,emailId,uid,registrationToken);
+            database.getReference(MANAGER_DATA).child(firstName).setValue(manager);
         }
 
-        User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark);
+        User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark,registrationToken);
         database.getReference(USER_DATA).child(uid).setValue(user);
 
         Intent intent = new Intent(SignUpPage.this, LoginPage.class);

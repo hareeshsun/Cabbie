@@ -33,6 +33,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder> {
         this.fragment = fragment;
     }
 
+
     @Override
     public FacilityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
@@ -42,7 +43,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder> {
 
     @Override
     public void onBindViewHolder(final FacilityViewHolder holder, int position) {
-        FacilityDataContainer cabRequestList = facilityDataList.get(position);
+       final FacilityDataContainer cabRequestList = facilityDataList.get(position);
         holder.employeeName.setText(cabRequestList.employee_name);
         holder.employeeID.setText(cabRequestList.employee_id);
         holder.destination.setText(cabRequestList.employee_desitnation);
@@ -71,7 +72,8 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder> {
             @Override
             public void onClick(View view) {
               //  getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(), true);
+                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(cabRequestList.employee_desitnation,cabRequestList.uid,cabRequestList.employee_id), true);
+
             }
         });
 

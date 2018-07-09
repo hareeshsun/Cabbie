@@ -34,7 +34,7 @@
             android:textStyle="bold"
             android:gravity="center|left"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/vehicleNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,6 +207,7 @@
         android:layout_height="wrap_content"
         android:text="Provide Cab"
         android:textAllCaps="false"
+        android:id="@+id/provideCab"
         android:textColor="@color/white"
         android:background="@color/colorPrimary"
         android:textStyle="bold"

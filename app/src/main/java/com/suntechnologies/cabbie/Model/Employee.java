@@ -19,11 +19,13 @@ public class Employee implements Serializable {
     public String manager_status;
     public String facility_status;
     public String date;
+    public String registrationToken;
+    public String uid;
     Employee(){
 
     }
 
-    public Employee(String employee_name, String employee_id, String employee_manger_name, String employee_desitnation, String pickuptime, String manager_status, String facility_status, String date) {
+    public Employee(String employee_name, String employee_id, String uid,String employee_manger_name, String employee_desitnation, String pickuptime, String manager_status, String facility_status, String date, String registrationToken) {
         this.employee_name = employee_name;
         this.employee_id = employee_id;
         this.employee_manger_name = employee_manger_name;
@@ -32,6 +34,8 @@ public class Employee implements Serializable {
         this.facility_status = facility_status;
         this.pickuptime = pickuptime;
         this.date = date;
+        this.registrationToken =registrationToken;
+        this.uid =uid;
 
     }
 

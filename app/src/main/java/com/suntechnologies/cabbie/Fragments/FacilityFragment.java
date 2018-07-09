@@ -1,6 +1,7 @@
 package com.suntechnologies.cabbie.Fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * Created by hareeshs on 02-07-2018.
  */
@@ -39,13 +42,14 @@ public class FacilityFragment extends Fragment {
     private DatabaseReference mDatabase;
     ArrayList<FacilityDataContainer> cabRequestList;
     private RecyclerView facilityRecyclerView;
-
+    private Dialog loadingDialog;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.facility_layout, container, false);
         facilityRecyclerView = (RecyclerView) rootView.findViewById(R.id.facilityRecyclerView);
-
+        loadingDialog = new SpotsDialog(getActivity(),"Logging...");
+        loadingDialog.show();
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
@@ -58,24 +62,29 @@ public class FacilityFragment extends Fragment {
                     for (DataSnapshot employeeId : uniqueSnapshot.getChildren()) {
                         FacilityDataContainer dataContainer = employeeId.getValue(FacilityDataContainer.class);
                         if (dataContainer != null)
-                            cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.employee_desitnation, dataContainer.employee_id,
+                        {
+
+                            cabRequestList.add(new FacilityDataContainer(dataContainer.uid,dataContainer.date, dataContainer.employee_desitnation, dataContainer.employee_id,
                                     dataContainer.employee_manger_name, dataContainer.employee_name, dataContainer.facility_status, dataContainer.manager_status,
-                                    dataContainer.pickuptime
+                                    dataContainer.pickuptime,dataContainer.registrationToken
                             ));
+                        }
+
                     }
                 }
                 facilityAdapter = new FacilityAdapter(cabRequestList, FacilityFragment.this);
                 facilityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-                facilityRecyclerView.setHasFixedSize(true);
-                facilityRecyclerView.addItemDecoration(new DividerItemDecoration(facilityRecyclerView.getContext(), LinearLayoutManager.VERTICAL));
-                facilityRecyclerView.setAdapter(facilityAdapter);
-            }
+        facilityRecyclerView.setHasFixedSize(true);
+        facilityRecyclerView.addItemDecoration(new DividerItemDecoration(facilityRecyclerView.getContext(), LinearLayoutManager.VERTICAL));
+        facilityRecyclerView.setAdapter(facilityAdapter);
+                loadingDialog.dismiss();
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+    }
+});
 
         return rootView;
     }
