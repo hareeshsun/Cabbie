@@ -1,14 +1,11 @@
 package com.suntechnologies.cabbie.Fragments;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.text.AutoText;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,29 +14,38 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.suntechnologies.cabbie.Adapters.FacilityAdapter;
 import com.suntechnologies.cabbie.DataHolders.DriverDetails;
-import com.suntechnologies.cabbie.DataHolders.FacilityDataContainer;
+import com.suntechnologies.cabbie.HelperMethods;
+import com.suntechnologies.cabbie.MainActivity;
+import com.suntechnologies.cabbie.Model.RideEmployeeDetail;
 import com.suntechnologies.cabbie.R;
+import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by hareeshs on 09-07-2018.
  */
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+
 public class ApproveCab extends Fragment {
 
     private List<DriverDetails> driverlist;
@@ -47,14 +53,23 @@ public class ApproveCab extends Fragment {
      EditText  vehicleModel,destinationText, driverNumber,riders, driverName;
     AutoCompleteTextView vehicleNumber;
     private Button provideCab;
-    String desination;
+   public String desination;
     String uid;
     String empId;
     private DatabaseReference mDatabase;
-  public ApproveCab(String desination, String uid, String empId){
+    private DatabaseReference msendcabDetailData;
+    String selectedVehicleNumer;
+    String vehicleModelNumber;
+    String driverNa;
+    String driverNo;
+    String rideNumber;
+    String rigstrationToken;
+
+  public ApproveCab(String desination, String uid, String empId, String rigstrationToken){
       this.desination = desination;
       this.uid = uid;
       this.empId= empId;
+      this.rigstrationToken= rigstrationToken;
   }
     @Nullable
     @Override
@@ -68,15 +83,17 @@ public class ApproveCab extends Fragment {
         driverName = (EditText) cabApprovalView.findViewById(R.id.driverName);
         riders = (EditText) cabApprovalView.findViewById(R.id.riders);
       //  riders.setText("3");
+
         destinationText = (EditText) cabApprovalView.findViewById(R.id.destination);
         provideCab = (Button) cabApprovalView.findViewById(R.id.provideCab);
         destinationText.setText(desination);
+
         driverlist = new ArrayList<>();
         driverlist.add(new DriverDetails("KA 03 BM 8055","TATA ZEST - Blue","S Hareesh","9493707194"));
         driverlist.add(new DriverDetails("KA 51 BM 1234","Maruthi Swift - White","R Mithu Lal","7010354978"));
         driverlist.add(new DriverDetails("KA 03 BM 7777","TATA INDICA - Silver","S Hareesh","7382108907"));
         driverlist.add(new DriverDetails("KA 03 BM 9999","TATA TIAGO - Orange","R Mithu Lal","9154241107"));
-
+        rideNumber = riders.getText().toString().trim();
 
         ArrayList<String > list = new ArrayList<>();
         for(int i=0;i<driverlist.size();i++){
@@ -93,14 +110,17 @@ public class ApproveCab extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long arg3) {
-                String selected = (String) arg0.getAdapter().getItem(arg2);
+                 selectedVehicleNumer = (String) arg0.getAdapter().getItem(arg2);
 
                 for(int i=0;i<driverlist.size();i++){
-                   if(driverlist.get(i).vehicleNumber.equalsIgnoreCase(selected)){
+                   if(driverlist.get(i).vehicleNumber.equalsIgnoreCase(selectedVehicleNumer)){
                        vehicleModel.setText(driverlist.get(i).getVehicleModel());
+                       vehicleModelNumber = driverlist.get(i).getVehicleModel();
                        driverName.setText(driverlist.get(i).driverName);
+                       driverNa=driverlist.get(i).driverName;
                        driverNumber.setText(driverlist.get(i).driverNumber);
-
+                       driverNo =driverlist.get(i).driverNumber;
+                       desination = destinationText.getText().toString();
 
                    }
                 }
@@ -113,7 +133,7 @@ public class ApproveCab extends Fragment {
             @Override
             public void onClick(View v)
             {
-                writeNewPost(uid,empId);
+                writeNewPost(uid,empId, selectedVehicleNumer,vehicleModelNumber,driverNa,driverNo,desination,rideNumber);
 
             }
         });
@@ -122,7 +142,7 @@ public class ApproveCab extends Fragment {
     }
 
 
-    private void writeNewPost(String uid, String id) {
+    private void writeNewPost(String uid, String id,String selectedVehicleNumer,String vehicleModelNumber, String driverNa,String driverNo,String desination,String rideNumber) {
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
@@ -130,9 +150,91 @@ public class ApproveCab extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(uid).child(id);
         mDatabase.child("facility_status").setValue("true");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String currentDateandTime = sdf.format(new Date());
+        System.out.println("current time date" + currentDateandTime);
+        msendcabDetailData = FirebaseDatabase.getInstance().getReference().child("CabDetails").child(day);
+        RideEmployeeDetail rideEmployeeDetail =  new RideEmployeeDetail(selectedVehicleNumer,driverNa,vehicleModelNumber,driverNo,"2",desination,currentDateandTime);
+        msendcabDetailData.child(id).setValue(rideEmployeeDetail);
+
+      String notificationKey=   FirebaseNotification.not(String.valueOf(gen()), rigstrationToken, getActivity());
+         if(notificationKey.length()>0){
+             notificationUser(notificationKey,"Cab is Approval","Cab will start at at "+currentDateandTime + " and will pickup by driver "+ driverNa ,getActivity());
+         }
+
+    }
+    public int gen()
+    {
+        Random r = new Random(System.currentTimeMillis());
+        return 10000 + r.nextInt(20000);
+    }
+    void notificationUser(String notification,String title,String body,Context mContext)
+    {
+     /*Post data*/
+        final RequestQueue requestQueue;
+        requestQueue = Volley.newRequestQueue(mContext);
+        String URL = "https://fcm.googleapis.com/fcm/send";
+
+        JSONObject data = new JSONObject();
+        try
+        {
+            data.put("to", notification);
+            Map<String, String> jsonParams = new HashMap<String, String>();
+
+            jsonParams.put("title", title);
+            jsonParams.put("body", body);
+            // data.put(new JSONObject(jsonParams));
+            data.put("notification", new JSONObject(jsonParams));
+
+        } catch (Exception e)
+        {
+
+        }
 
 
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, URL,
 
+                data,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+
+
+                        String responseId = response.optString("success");
+                        //  NotificationUser(notification);
+                        if(Integer.parseInt(responseId)>0){
+                          getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new FacilityFragment(), true);
+
+                            Log.d("response", String.valueOf(responseId));
+
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        //   Handle Error
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "key=AAAAu6EGWkg:APA91bEcnb_u_xmi_0KngqirNqOMCrCj94X71pUbgZg6cWG7cM5tdKxegVzapl8uUm8ULPVf9BVzqmFIaNjRwYR3nUyQxURgXrD2PqDu3apsL__eLJw-fl_lJEFah3hGoQtWM78JxJAyksO2Fr2KwZ0mJShk_K_AYQ");
+                headers.put("Content-Type", "application/json");
+
+                return headers;
+            }
+        };
+        requestQueue.add(postRequest);
     }
 
 }

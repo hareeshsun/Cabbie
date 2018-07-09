@@ -280,7 +280,7 @@ public class CabRequest extends Fragment
     //   Log.d("sdfsf",notificationKey);
        // FirebaseNotification.addNotificationKey(notificationKey,getActivity(),"Cab request","Manger and faclity Team");
         if(notificationKey !=null && notificationKey.length()>0){
-            notificationUser(notificationKey, "Cab Reqest ","I need for cab ",getActivity());
+            notificationUser(notificationKey, "New Cab Request ","I need to drop at " + destination,getActivity());
         }else{
           //  HelperMethods.showDialog(getActivity(),"Error","Something went wrong...");
 

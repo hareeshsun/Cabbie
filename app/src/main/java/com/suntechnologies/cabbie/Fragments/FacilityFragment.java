@@ -63,11 +63,15 @@ public class FacilityFragment extends Fragment {
                         FacilityDataContainer dataContainer = employeeId.getValue(FacilityDataContainer.class);
                         if (dataContainer != null)
                         {
+                             if(Boolean.parseBoolean(dataContainer.facility_status)&& Boolean.parseBoolean(dataContainer.manager_status)){
 
-                            cabRequestList.add(new FacilityDataContainer(dataContainer.uid,dataContainer.date, dataContainer.employee_desitnation, dataContainer.employee_id,
-                                    dataContainer.employee_manger_name, dataContainer.employee_name, dataContainer.facility_status, dataContainer.manager_status,
-                                    dataContainer.pickuptime,dataContainer.registrationToken
-                            ));
+                             }else{
+                                 cabRequestList.add(new FacilityDataContainer(dataContainer.uid,dataContainer.date, dataContainer.employee_desitnation, dataContainer.employee_id,
+                                         dataContainer.employee_manger_name, dataContainer.employee_name, dataContainer.facility_status, dataContainer.manager_status,
+                                         dataContainer.pickuptime,dataContainer.registrationToken
+                                 ));
+                             }
+
                         }
 
                     }

@@ -17,4 +17,5 @@ public class CabDetails {
         this.vehicleModel = vehicleModel;
         this.driverNumber = driverNumber;
     }
+
 }
