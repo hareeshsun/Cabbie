@@ -72,7 +72,9 @@ public class CabRequest extends Fragment
     Button cabRequest;
     private String USER_TOKEN_KEY = "USERTOKEN";
     private String USER_UID = "USERUID";
-    private DatabaseReference mDatabase,admindata,managerData;
+    private DatabaseReference mDatabase;
+    private DatabaseReference managerRef;
+    private DatabaseReference admindata,managerData;
     private User userData;
     String reportTo;
     String pickupTime;
@@ -113,9 +115,6 @@ public class CabRequest extends Fragment
         reportingManagerList.add("Sunil");
         reportingManagerList.add("Syed");
         reportingManagerList.add("Jaydeep");
-
-
-
 
         mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
         admindata = FirebaseDatabase.getInstance().getReference("admin/");
@@ -163,8 +162,6 @@ public class CabRequest extends Fragment
                         }
                     }
                 }
-
-
 
                 managerName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                 {
@@ -268,11 +265,29 @@ public class CabRequest extends Fragment
         return cabRequestView;
     }
 
-    private void writeNewUser(String year, String month, String day, String requestNmuber, String uid, String employeeName, String emplyoeeId, String destination, String reportingManger, String pickupTime, String date)
+    private void writeNewUser(String year, String month, String day, String requestNmuber, final String uid, String employeeName, final String emplyoeeId, String destination, final String reportingManger, String pickupTime, String date)
     {
         mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + year + "/" + month + "/" + day + "/" + uid);
-        Employee employee = new Employee(employeeName, emplyoeeId,uid, reportingManger, destination, pickupTime, "false", "false", date,userData.registrationToken);
+        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination,"false", "false",pickupTime, date,userData.registrationToken, uid);
         mDatabase.child(emplyoeeId).setValue(employee);
+
+        managerRef = FirebaseDatabase.getInstance().getReference("managerData");
+        managerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot managerObject : dataSnapshot.getChildren()){
+                    if(managerObject.getKey() != null)
+                    if(managerObject.getKey().equalsIgnoreCase(reportingManger)){
+                        managerRef.child(managerObject.getKey()).child("employeeUID").child(emplyoeeId).child("employeeUserId").setValue(uid);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
        // Log.d("sdfsf",managerToken);

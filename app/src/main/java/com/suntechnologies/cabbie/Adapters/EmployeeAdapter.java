@@ -33,7 +33,8 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeViewHolder> {
     public void onBindViewHolder(EmployeeViewHolder holder, int position) {
         Employee employee = employees.get(position);
         holder.tvName.setText(employee.employee_name);
-        holder.mangerName.setText(employee.employee_manger_name);
+        String formattedString = "by %s";
+        holder.mangerName.setText(String.format(formattedString,employee.employee_manger_name));
         holder.designation.setText(employee.employee_desitnation);
         holder.employeeID.setText(employee.employee_id);
 

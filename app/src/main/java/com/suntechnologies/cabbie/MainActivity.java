@@ -1,7 +1,9 @@
 package com.suntechnologies.cabbie;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,8 +38,11 @@ import com.suntechnologies.cabbie.Fragments.FacilityFragment;
 import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.Fragments.OnBoarding;
 import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
+import com.suntechnologies.cabbie.Model.EmployeeUserID;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -48,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private FirebaseAuth auth;
     DatabaseReference mDatabase;
     FirebaseDatabase database;
+    DatabaseReference managerDataRef;
+    ArrayList<String> userIDList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View header=navigationView.getHeaderView(0);
+        final TextView employeeName = (TextView) header.findViewById(R.id.employeeName);
+
         String USER_TOKEN_KEY = "USERTOKEN";
         SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY, MODE_PRIVATE);
         String USER_UID = "USERUID";
@@ -92,12 +103,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     userData = dataSnapshot.getValue(UserData.class);
+                    if(userData != null) {
+                        employeeName.setText(userData.firstName + " " + userData.lastName);
+                    }
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(), false);
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid), false);
                 } else {
-
-
-
+                    employeeName.setText("Admin");
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     if (firebaseUser != null) {
                         database.getReference("admin").child("registrationToken").setValue(registrationToken);
@@ -123,8 +135,27 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new Notification(), true);
+                managerDataRef = FirebaseDatabase.getInstance().getReference("managerData");
+                managerDataRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot managerObject : dataSnapshot.getChildren()){
+                            for(DataSnapshot employeeRequest : managerObject.getChildren()){
+                                for(DataSnapshot employeeID : employeeRequest.getChildren()){
+                                    EmployeeUserID userID = employeeID.getValue(EmployeeUserID.class);
+                                    if(userID != null)
+                                    userIDList.add(userID.employeeUserId);
+                                }
+                            }
+                        }
+                        openNotification();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 
@@ -147,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if(id == R.id.nav_home){
             if(userData != null) {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(), false);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid), false);
             }
             else {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -179,5 +210,10 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    private void openNotification(){
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new Notification(userIDList), false);
     }
 }

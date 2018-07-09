@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="horizontal"
+    android:layout_margin="5dp"
+    android:background="@drawable/white_background_with_black_border"
+    android:layout_weight="3"
+    android:id="@+id/notificaitonLayout"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/employeeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hareesh Singala"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16"/>
+        <TextView
+            android:id="@+id/pickUpTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="16:40"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/managerApproval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/darkGreen"
+        android:text="Approve"
+        android:layout_margin="5dp"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/managerRejection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/red"
+        android:text="Reject"
+        android:layout_margin="5dp"
+        android:textColor="@color/white"/>
+</LinearLayout>
