@@ -106,8 +106,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     if(userData != null) {
                         employeeName.setText(userData.firstName + " " + userData.lastName);
                     }
-                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId), false);
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, false), false);
                 } else {
                     employeeName.setText("Admin");
                     FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if(id == R.id.nav_home){
             if(userData != null) {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId), false);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, false), false);
             }
             else {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);

@@ -48,9 +48,10 @@ public class EmployeeFragment extends Fragment {
     public EmployeeFragment() {
     }
 
-    public EmployeeFragment(String uid, String employeeID) {
+    public EmployeeFragment(String uid, String employeeID, boolean requestForCab) {
         this.uid = uid;
         this.employeeID = employeeID;
+        employeeflag = requestForCab;
     }
 
     @Override
@@ -74,26 +75,27 @@ public class EmployeeFragment extends Fragment {
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
+        if(employeeflag) {
+            mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab" + "/" + year + "/" + month + "/" + day + "/" + uid + "/" + employeeID);
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Employee employee = dataSnapshot.getValue(Employee.class);
+                    if (employee != null)
+                        employeeCabRequestList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
+                                employee.manager_status, employee.facility_status, employee.pickuptime, employee.date, employee.registrationToken, employee.uid));
+                    employeeAdapter = new EmployeeAdapter(employeeCabRequestList, EmployeeFragment.this);
+                    rv_cycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+                    rv_cycle.setHasFixedSize(true);
+                    rv_cycle.setAdapter(employeeAdapter);
+                }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + "/" + year + "/" + month + "/" + day + "/"+ uid + "/" + employeeID);
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Employee employee = dataSnapshot.getValue(Employee.class);
-                employeeCabRequestList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
-                        employee.manager_status, employee.facility_status, employee.pickuptime, employee.date, employee.registrationToken, employee.uid));
-                employeeAdapter = new EmployeeAdapter(employeeCabRequestList ,EmployeeFragment.this);
-                rv_cycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-                rv_cycle.setHasFixedSize(true);
-                rv_cycle.setAdapter(employeeAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("emplyoeestatus", String.valueOf(databaseError));
-            }
-        });
-
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d("emplyoeestatus", String.valueOf(databaseError));
+                }
+            });
+        }
 
         return rootView;
     }

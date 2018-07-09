@@ -18,13 +18,14 @@ public class User {
     public String currentAddress;
     public String landmark;
 public  String registrationToken;
+    public String uid;
 
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String employeeId, String firstName, String lastName, String phoneNumber, String designation, String reportingManager , String emailAddress, String address, String currentAddress, String landmark,String registrationToken ) {
+    public User(String employeeId, String firstName, String lastName, String phoneNumber, String designation, String reportingManager , String emailAddress, String address, String currentAddress, String landmark,String registrationToken, String uid) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber =phoneNumber;
@@ -36,7 +37,7 @@ public  String registrationToken;
         this.currentAddress = currentAddress;
         this.landmark = landmark;
         this.registrationToken = registrationToken;
-
+        this.uid = uid;
     }
 
 }

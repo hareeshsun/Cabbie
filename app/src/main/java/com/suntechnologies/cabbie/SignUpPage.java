@@ -221,7 +221,7 @@ public class SignUpPage extends AppCompatActivity {
             database.getReference(MANAGER_DATA).child(firstName).setValue(manager);
         }
 
-        User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark,registrationToken);
+        User user = new User(employeeId,firstName, lastName,phoneNumer,designation,reportingManager,emailId,address,currentAddress,landmark,registrationToken, uid);
         database.getReference(USER_DATA).child(uid).setValue(user);
 
         Intent intent = new Intent(SignUpPage.this, LoginPage.class);
