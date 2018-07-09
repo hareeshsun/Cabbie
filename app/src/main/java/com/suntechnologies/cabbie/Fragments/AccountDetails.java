@@ -7,21 +7,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
+import com.suntechnologies.cabbie.Adapters.SpinnerAdapter;
 import com.suntechnologies.cabbie.DataHolders.UserData;
 import com.suntechnologies.cabbie.HelperMethods;
 import com.suntechnologies.cabbie.R;
-import com.suntechnologies.cabbie.SunCabbie;
 
 import java.util.ArrayList;
 
@@ -76,7 +73,7 @@ public class AccountDetails extends Fragment {
             reportingManagerList.add("Sunil");
             reportingManagerList.add("Syed");
             reportingManagerList.add("Jaydeep");
-            DesignationAdapter reportingManagerAdapter = new DesignationAdapter(getContext(),android.R.layout.simple_spinner_item,reportingManagerList);
+            SpinnerAdapter reportingManagerAdapter = new SpinnerAdapter(getContext(),android.R.layout.simple_spinner_item,reportingManagerList);
             manager.setAdapter(reportingManagerAdapter);
 
             for(int i=0; i<reportingManagerList.size();i++){

@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
+import com.suntechnologies.cabbie.Adapters.SpinnerAdapter;
 import com.suntechnologies.cabbie.Model.Manager;
 import com.suntechnologies.cabbie.Model.User;
 
@@ -88,7 +88,7 @@ public class SignUpPage extends AppCompatActivity {
         designationList.add("Project Manager");
         designationList.add("Manager");
 
-        DesignationAdapter designationAdapter = new DesignationAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,designationList);
+        SpinnerAdapter designationAdapter = new SpinnerAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,designationList);
         designationSpinner.setAdapter(designationAdapter);
         designationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -112,7 +112,7 @@ public class SignUpPage extends AppCompatActivity {
         reportingManagerList.add("Syed");
         reportingManagerList.add("Jaydeep");
 
-        DesignationAdapter reportingManagerAdapter = new DesignationAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,reportingManagerList);
+        SpinnerAdapter reportingManagerAdapter = new SpinnerAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,reportingManagerList);
         reportTO.setAdapter(reportingManagerAdapter);
 
         reportTO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()

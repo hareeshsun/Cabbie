@@ -1,5 +1,7 @@
 package com.suntechnologies.cabbie.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,9 +23,11 @@ import com.suntechnologies.cabbie.DataHolders.FacilityDataContainer;
 import com.suntechnologies.cabbie.HelperMethods;
 import com.suntechnologies.cabbie.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by hareeshs on 02-07-2018.
@@ -33,7 +37,7 @@ public class FacilityFragment extends Fragment {
 
     FacilityAdapter facilityAdapter;
     private DatabaseReference mDatabase;
-    ArrayList<FacilityDataContainer> cabRequestList = new ArrayList<>();
+    ArrayList<FacilityDataContainer> cabRequestList;
     private RecyclerView facilityRecyclerView;
 
     @Nullable
@@ -42,27 +46,14 @@ public class FacilityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.facility_layout, container, false);
         facilityRecyclerView = (RecyclerView) rootView.findViewById(R.id.facilityRecyclerView);
 
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String formattedYear = Integer.toString(year);
-        String formattedMonth = HelperMethods.getStringFormattedMonth(month);
-        String formattedDay = Integer.toString(day);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(formattedYear).child(formattedMonth).child("08");
+        String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
+        String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
+        String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
+        cabRequestList = new ArrayList<>();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day);
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-/*                System.out.println("Drunken Monkey : " + dataSnapshot.toString());
-                FacilityDataContainer dataContainer = dataSnapshot.getValue(FacilityDataContainer.class);
-                if(dataContainer != null)
-                cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.destination, dataContainer.employeeID,
-                                dataContainer.employeeManager, dataContainer.employeeName, dataContainer.facilityStatus, dataContainer.managerStatus,
-                                dataContainer.pickUpTime));*/
-
                 for (DataSnapshot uniqueSnapshot : dataSnapshot.getChildren()) {
                     for (DataSnapshot employeeId : uniqueSnapshot.getChildren()) {
                         FacilityDataContainer dataContainer = employeeId.getValue(FacilityDataContainer.class);
@@ -73,17 +64,7 @@ public class FacilityFragment extends Fragment {
                             ));
                     }
                 }
-
-/*                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                    FacilityDataContainer dataContainer = dataSnapshot1.getValue(FacilityDataContainer.class);
-                    if(dataContainer != null)
-                    cabRequestList.add(new FacilityDataContainer(dataContainer.date, dataContainer.destination, dataContainer.employeeID,
-                            dataContainer.employeeManager, dataContainer.employeeName, dataContainer.facilityStatus, dataContainer.managerStatus,
-                            dataContainer.pickUpTime));
-                }*/
-
-
-                facilityAdapter = new FacilityAdapter(cabRequestList);
+                facilityAdapter = new FacilityAdapter(cabRequestList, FacilityFragment.this);
                 facilityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                 facilityRecyclerView.setHasFixedSize(true);
                 facilityRecyclerView.addItemDecoration(new DividerItemDecoration(facilityRecyclerView.getContext(), LinearLayoutManager.VERTICAL));

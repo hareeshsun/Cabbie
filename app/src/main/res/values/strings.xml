@@ -25,6 +25,7 @@
     <string name="closeDrawer">close_drawer</string>
 
     <!-- Navigation Drawer menu labels -->
+    <string name="nav_home">Home</string>
     <string name="nav_account">Account Details</string>
     <string name="nav_previous_ride">Previous Rides</string>
     <string name="nav_boarding">On Boarding</string>

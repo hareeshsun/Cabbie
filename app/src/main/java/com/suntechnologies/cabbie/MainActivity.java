@@ -144,8 +144,17 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_account) {
+        if(id == R.id.nav_home){
+            if(userData != null) {
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(), false);
+            }
+            else {
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new FacilityFragment(), true);
+            }
+        }
+        else if (id == R.id.nav_account) {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new AccountDetails(userData, uid), true);
         } else if (id == R.id.nav_boarding) {

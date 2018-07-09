@@ -32,20 +32,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.suntechnologies.cabbie.Adapters.DesignationAdapter;
+import com.suntechnologies.cabbie.Adapters.SpinnerAdapter;
 import com.suntechnologies.cabbie.HelperMethods;
 import com.suntechnologies.cabbie.MainActivity;
 import com.suntechnologies.cabbie.Model.Employee;
 import com.suntechnologies.cabbie.Model.Status;
 import com.suntechnologies.cabbie.Model.User;
 import com.suntechnologies.cabbie.R;
-import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,7 +158,7 @@ public class CabRequest extends Fragment
             }
         });
 
-        DesignationAdapter reportingManagerAdapter = new DesignationAdapter(getActivity(), android.R.layout.simple_spinner_item, reportingManagerList);
+        SpinnerAdapter reportingManagerAdapter = new SpinnerAdapter(getActivity(), android.R.layout.simple_spinner_item, reportingManagerList);
         managerName.setAdapter(reportingManagerAdapter);
 
         Time today = new Time(Time.getCurrentTimezone());

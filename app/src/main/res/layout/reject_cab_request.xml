@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reject Request"
+        android:textSize="@dimen/text_size_20"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_margin="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reject Reason"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_background_with_black_border"
+            android:layout_margin="5dp">
+            <Spinner
+                android:id="@+id/rejectReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </Spinner>
+
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/rejectOptional"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_background_with_black_border"
+            android:textSize="@dimen/text_size_18"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:hint="message(optional)"/>
+
+        <Button
+            android:id="@+id/btnReject"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Reject"
+            android:textSize="@dimen/text_size_20"
+            android:textColor="@color/white"
+            android:background="@color/red"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textAllCaps="false"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

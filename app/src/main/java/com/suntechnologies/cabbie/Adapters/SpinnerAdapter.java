@@ -16,12 +16,12 @@ import java.util.ArrayList;
  * Created by hareeshs on 20-06-2018.
  */
 
-public class DesignationAdapter extends ArrayAdapter<String> {
+public class SpinnerAdapter extends ArrayAdapter<String> {
 
     private Context context;
     private ArrayList<String> destinationArrayList;
 
-    public DesignationAdapter(@NonNull Context context, @LayoutRes int resource, ArrayList<String> stringArrayList) {
+    public SpinnerAdapter(@NonNull Context context, @LayoutRes int resource, ArrayList<String> stringArrayList) {
         super(context, resource);
         this.context =  context;
         this.destinationArrayList = stringArrayList;
