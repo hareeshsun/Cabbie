@@ -7,9 +7,18 @@
             android:icon="@drawable/ic_home_orange_a400_24dp"
             android:title="@string/nav_home" />
         <item
-            android:id="@+id/nav_account"
+        android:id="@+id/nav_account"
+        android:icon="@drawable/ic_account_circle_orange_500_24dp"
+        android:title="@string/nav_account" />
+
+        <item
+            android:id="@+id/manager_details"
             android:icon="@drawable/ic_account_circle_orange_500_24dp"
-            android:title="@string/nav_account" />
+            android:title="Manager Details" />
+        <item
+            android:id="@+id/cab_details"
+            android:icon="@drawable/ic_account_circle_orange_500_24dp"
+            android:title="Cab Details" />
         <item
             android:id="@+id/nav_boarding"
             android:icon="@drawable/on_boarding"

@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -31,10 +32,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.suntechnologies.cabbie.DataHolders.UserData;
 import com.suntechnologies.cabbie.Fragments.AccountDetails;
+import com.suntechnologies.cabbie.Fragments.CabDetails;
 import com.suntechnologies.cabbie.Fragments.CabRequest;
 import com.suntechnologies.cabbie.Fragments.EmergencyDetails;
 import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
 import com.suntechnologies.cabbie.Fragments.FacilityFragment;
+import com.suntechnologies.cabbie.Fragments.ManagerDetails;
 import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.Fragments.OnBoarding;
 import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     FirebaseDatabase database;
     DatabaseReference managerDataRef;
     ArrayList<String> userIDList = new ArrayList<>();
-
+    NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View header=navigationView.getHeaderView(0);
@@ -105,11 +108,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     userData = dataSnapshot.getValue(UserData.class);
                     if(userData != null) {
                         employeeName.setText(userData.firstName + " " + userData.lastName);
+                        hideItem(navigationView, false);
                     }
                     HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, false), false);
                 } else {
                     employeeName.setText("Admin");
                     FirebaseUser firebaseUser = auth.getCurrentUser();
+                    hideItem(navigationView, true);
                     if (firebaseUser != null) {
                         database.getReference("admin").child("registrationToken").setValue(registrationToken);
                     }
@@ -169,6 +174,18 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             super.onBackPressed();
         }
     }
+    void hideItem(NavigationView navigationView, boolean flag){
+        Menu nav_Menu = navigationView.getMenu();
+        if(flag){
+            nav_Menu.findItem(R.id.nav_previous).setVisible(false);
+            nav_Menu.findItem(R.id.nav_account).setVisible(false);
+        }else{
+            nav_Menu.findItem(R.id.manager_details).setVisible(false);
+            nav_Menu.findItem(R.id.cab_details).setVisible(false);
+        }
+
+
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -194,7 +211,17 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new PreviousRideDetails(), true);
 
-        } else if (id == R.id.nav_emergency) {
+        } else if (id == R.id.cab_details) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(),new CabDetails(), true);
+
+        }
+        else if (id == R.id.manager_details) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new ManagerDetails(), true);
+
+        }
+        else if (id == R.id.nav_emergency) {
 
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmergencyDetails(), true);
