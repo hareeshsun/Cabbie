@@ -158,15 +158,25 @@
             android:textStyle="bold"
             android:gravity="center|left"/>
 
-        <EditText
-            android:id="@+id/riders"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:weightSum="1"
             android:padding="5dp"
-            android:textColor="@color/black"
-            android:background="@drawable/white_background_with_black_border"
-            android:textSize="@dimen/text_size_16"/>
+            android:orientation="horizontal"
+            android:background="@drawable/white_background_with_black_border">
+
+            <Spinner
+                android:id="@+id/riders"
+                android:layout_width="match_parent"
+               android:layout_weight="1"
+                android:layout_height="match_parent">
+
+            </Spinner>
+
+        </LinearLayout>
 
     </LinearLayout>
 

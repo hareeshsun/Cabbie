@@ -72,6 +72,9 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeViewHolder> {
 
     @Override
     public int getItemCount() {
-        return (null != employees ? employees.size() : 0);
+        return employees.size();
+    }
+    public void setCardSets(ArrayList<Employee> cardSets) {
+        employees = cardSets;
     }
 }

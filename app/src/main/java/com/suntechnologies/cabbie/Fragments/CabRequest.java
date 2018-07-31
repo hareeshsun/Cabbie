@@ -70,17 +70,18 @@ public class CabRequest extends Fragment
     TextView employeeName, employeeEmail, employeeID, pickUpTime, employeeNumber, employeeAddress;
     Spinner managerName;
     Button cabRequest;
-    private String USER_TOKEN_KEY = "USERTOKEN";
+    private String USER_TOKEN_KEY = "USERDATA";
     private String USER_UID = "USERUID";
+    private String EMPLOYEE_ID = "EMPLOYEE ID";
     private DatabaseReference mDatabase;
     private DatabaseReference managerRef;
-    private DatabaseReference admindata,managerData;
+    private DatabaseReference admindata, managerData;
     private User userData;
     String reportTo;
     String pickupTime;
-    String uid;
+    String uid, employeeId;
     Context mContext;
-    String adminToken,managerToken;
+    String adminToken, managerToken;
     private ArrayList<String> reportingManagerList = new ArrayList<>();
     private Dialog loadingDialog;
 
@@ -95,7 +96,7 @@ public class CabRequest extends Fragment
     {
         View cabRequestView = inflater.inflate(R.layout.cab_request_layout, container, false);
         mContext = getActivity();
-        loadingDialog = new SpotsDialog(mContext,"Logging...");
+        loadingDialog = new SpotsDialog(mContext, "Logging...");
         employeeName = (TextView) cabRequestView.findViewById(R.id.employee_name);
         employeeID = (TextView) cabRequestView.findViewById(R.id.employeeID);
         employeeEmail = (TextView) cabRequestView.findViewById(R.id.employeeEmail);
@@ -107,6 +108,7 @@ public class CabRequest extends Fragment
         loadingDialog.show();
         SharedPreferences preferences = getContext().getSharedPreferences(USER_TOKEN_KEY, MODE_PRIVATE);
         uid = preferences.getString(USER_UID, null);
+        employeeId = preferences.getString(EMPLOYEE_ID, null);
 
         reportingManagerList.add("Select Reporting Manager");
         reportingManagerList.add("Bala");
@@ -135,7 +137,6 @@ public class CabRequest extends Fragment
             }
         });
 
-
         mDatabase.addValueEventListener(new ValueEventListener()
         {
             @Override
@@ -145,7 +146,6 @@ public class CabRequest extends Fragment
                 userData = dataSnapshot.getValue(User.class);
                 if (userData != null)
                 {
-
                     loadingDialog.dismiss();
                     employeeName.setText(userData.firstName + " " + userData.lastName);
                     employeeID.setText(userData.employeeId);
@@ -185,20 +185,17 @@ public class CabRequest extends Fragment
 
             }
         });
-        managerData = FirebaseDatabase.getInstance().getReference("managerData/");
+        managerData = FirebaseDatabase.getInstance().getReference("managerData/" + reportTo);
         managerData.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-
-              /*  if(dataSnapshot.child(reportTo).child("registrationToken").getValue().toString() != null)
+                if (dataSnapshot != null)
                 {
-                    managerToken = dataSnapshot.child(reportTo).child("registrationToken").getValue().toString();
+                    String managerRegistrationToken = (String) dataSnapshot.child("registrationToken").getValue();
+                    //  Log.d("testof data",managerRegistrationToken);
                 }
-
-*/
-
             }
 
             @Override
@@ -248,9 +245,7 @@ public class CabRequest extends Fragment
             @Override
             public void onClick(View v)
             {
-
                 String requestNmuber = String.valueOf(gen());
-
                 String employeeName = userData.firstName + " " + userData.lastName;
                 String destination = userData.address + " " + userData.currentAddress + " " + userData.lastName;
                 ArrayList<Status> statuse = new ArrayList<Status>();
@@ -268,40 +263,46 @@ public class CabRequest extends Fragment
     private void writeNewUser(String year, String month, String day, String requestNmuber, final String uid, String employeeName, final String emplyoeeId, String destination, final String reportingManger, String pickupTime, String date)
     {
         mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + year + "/" + month + "/" + day + "/" + uid);
-        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination,"false", "false",pickupTime, date,userData.registrationToken, uid);
+        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination, "false", "false", pickupTime, date, userData.registrationToken, uid, "", "");
         mDatabase.child(emplyoeeId).setValue(employee);
 
         managerRef = FirebaseDatabase.getInstance().getReference("managerData");
-        managerRef.addValueEventListener(new ValueEventListener() {
+        managerRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot managerObject : dataSnapshot.getChildren()){
-                    if(managerObject.getKey() != null)
-                    if(managerObject.getKey().equalsIgnoreCase(reportingManger)){
-                        managerRef.child(managerObject.getKey()).child("employeeUID").child(emplyoeeId).child("employeeUserId").setValue(uid);
-                    }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot managerObject : dataSnapshot.getChildren())
+                {
+                    if (managerObject.getKey() != null)
+                        if (managerObject.getKey().equalsIgnoreCase(reportingManger))
+                        {
+                            managerRef.child(managerObject.getKey()).child("employeeUID").child(emplyoeeId).child("employeeUserId").setValue(uid);
+                        }
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
 
             }
         });
 
+        // Log.d("sdfsf",managerToken);
+        ArrayList<String> ids = new ArrayList<>();
+        ids.add(adminToken);
 
-       // Log.d("sdfsf",managerToken);
-      String notificationKey =  FirebaseNotification.not(String.valueOf(gen()), adminToken,getActivity());
-    //   Log.d("sdfsf",notificationKey);
-       // FirebaseNotification.addNotificationKey(notificationKey,getActivity(),"Cab request","Manger and faclity Team");
-        if(notificationKey !=null && notificationKey.length()>0){
-            notificationUser(notificationKey, "New Cab Request ","I need to drop at " + destination,getActivity());
-        }else{
-          //  HelperMethods.showDialog(getActivity(),"Error","Something went wrong...");
+        String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
 
+        if (notificationKey != null && notificationKey.length() > 0)
+        {
+            loadingDialog.show();
+            notificationUser(notificationKey, "New Cab Request ", "I need to drop at " + destination, getActivity());
+        } else
+        {
+            HelperMethods.showDialog(getActivity(), "Error", "Something went wrong...");
         }
-
-
     }
 
     public int gen()
@@ -310,79 +311,7 @@ public class CabRequest extends Fragment
         return 10000 + r.nextInt(20000);
     }
 
- /*   String not(final String notificationKey, String registrationToken)
-    {
-    *//*Post data*//*
-    final String test = "";
-
-        final RequestQueue requestQueue;
-        requestQueue = Volley.newRequestQueue(getActivity());
-        String URL = "https://fcm.googleapis.com/fcm/notification";
-
-        JSONObject data = new JSONObject();
-        try
-        {
-            data.put("operation", "create");
-            data.put("notification_key_name", notificationKey);
-            data.put("registration_ids", new JSONArray(Arrays.asList(registrationToken)));
-        } catch (Exception e)
-        {
-
-        }
-
-        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, URL,
-
-                data,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-
-                        String notification = response.optString("notification_key");
-                        test = notification;
-                        if (notification != null)
-                        {
-                            //  NotificationUser(notification);
-                            // NotificationUser("APA91bEzZ2cSZMOiBOsol5_rCWnwqkvtjZjbo_x8FoC4Nmn6eLPybJjbbO1144zPRtzqBXqzRUmyRuJe5FUWKW5eWxPcvZU0N0ymYA5iQjeqLhdar90agCSuKfXdEG-1iLyHHPlFSPXT63bunMUBZzjzzOlFDMX5oQ");
-
-
-                            //  FirebaseNotification.addNotificationKey(notification,mContext);
-
-                        }
-
-                        Log.d("test", String.valueOf(notification));
-                        *//*Post data*//*
-
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        //   Handle Error
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("project_id", "805860432456");
-                headers.put("Authorization", "key=AAAAu6EGWkg:APA91bEcnb_u_xmi_0KngqirNqOMCrCj94X71pUbgZg6cWG7cM5tdKxegVzapl8uUm8ULPVf9BVzqmFIaNjRwYR3nUyQxURgXrD2PqDu3apsL__eLJw-fl_lJEFah3hGoQtWM78JxJAyksO2Fr2KwZ0mJShk_K_AYQ");
-                headers.put("Content-Type", "application/json");
-                headers.put("Accept", "application/json");
-
-                return headers;
-            }
-        };
-        requestQueue.add(postRequest);
-        return test;
-
-    }*/
-
-    void notificationUser(String notification,String title,String body,Context mContext)
+    void notificationUser(String notification, String title, String body, Context mContext)
     {
      /*Post data*/
         final RequestQueue requestQueue;
@@ -405,7 +334,6 @@ public class CabRequest extends Fragment
 
         }
 
-
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, URL,
 
                 data,
@@ -414,18 +342,22 @@ public class CabRequest extends Fragment
                     @Override
                     public void onResponse(JSONObject response)
                     {
-
-
-                            String responseId = response.optString("success");
+                        String responseId = response.optString("success");
                         //  NotificationUser(notification);
-                        if(Integer.parseInt(responseId)>0){
+                        if (Integer.parseInt(responseId) > 0)
+                        {
                             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new EmployeeFragment(managerToken, userData.employeeId ,true), true);
+                            EmployeeFragment employeeFragment = new EmployeeFragment(uid, employeeId);
+                            HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), employeeFragment, true);
 
                             Log.d("response", String.valueOf(responseId));
+                            loadingDialog.dismiss();
 
+                        } else
+                        {
+                            loadingDialog.dismiss();
+                            HelperMethods.showDialog(getActivity(), "Error", "Something went wrong!");
                         }
-
 
                     }
                 },

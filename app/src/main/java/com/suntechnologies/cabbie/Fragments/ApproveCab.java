@@ -1,5 +1,6 @@
 package com.suntechnologies.cabbie.Fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -42,18 +44,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * Created by hareeshs on 09-07-2018.
  */
 
-public class ApproveCab extends Fragment {
+public class ApproveCab extends Fragment
+{
 
     private List<DriverDetails> driverlist;
     private ArrayList<DriverDetails> selectedDriver;
-     EditText  vehicleModel,destinationText, driverNumber,riders, driverName;
+    EditText vehicleModel, destinationText, driverNumber, driverName;
     AutoCompleteTextView vehicleNumber;
+    Spinner spinner;
     private Button provideCab;
-   public String desination;
+    public String desination;
     String uid;
     String empId;
     private DatabaseReference mDatabase;
@@ -64,111 +70,159 @@ public class ApproveCab extends Fragment {
     String driverNo;
     String rideNumber;
     String rigstrationToken;
+    private Dialog loadingDialog;
 
-  public ApproveCab(String desination, String uid, String empId, String rigstrationToken){
-      this.desination = desination;
-      this.uid = uid;
-      this.empId= empId;
-      this.rigstrationToken= rigstrationToken;
-  }
+    // String rideNumber[] ={"1","2","3","4"};
+    public ApproveCab(String desination, String uid, String empId, String rigstrationToken)
+    {
+        this.desination = desination;
+        this.uid = uid;
+        this.empId = empId;
+        this.rigstrationToken = rigstrationToken;
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
 
-        View cabApprovalView = inflater.inflate(R.layout.approve_cab_details,container,false);
-
+        View cabApprovalView = inflater.inflate(R.layout.approve_cab_details, container, false);
+        loadingDialog = new SpotsDialog(getActivity(), "Cab is approval ...");
         vehicleNumber = (AutoCompleteTextView) cabApprovalView.findViewById(R.id.vehicleNumber);
         vehicleModel = (EditText) cabApprovalView.findViewById(R.id.vehicleModel);
         driverNumber = (EditText) cabApprovalView.findViewById(R.id.driverNumber);
         driverName = (EditText) cabApprovalView.findViewById(R.id.driverName);
-        riders = (EditText) cabApprovalView.findViewById(R.id.riders);
-      //  riders.setText("3");
+        spinner = (Spinner) cabApprovalView.findViewById(R.id.riders);
+        //  spinner.setText("3");
+
+        List<String> rideNumberArrayList = new ArrayList<String>();
+        rideNumberArrayList.add("1");
+        rideNumberArrayList.add("2");
+        rideNumberArrayList.add("3");
+        rideNumberArrayList.add("4");
+        // rideNumberArrayList.add("5");
+        // rideNumberArrayList.add("6");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, rideNumberArrayList);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                rideNumber = spinner.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
 
         destinationText = (EditText) cabApprovalView.findViewById(R.id.destination);
         provideCab = (Button) cabApprovalView.findViewById(R.id.provideCab);
         destinationText.setText(desination);
 
         driverlist = new ArrayList<>();
-        driverlist.add(new DriverDetails("KA 03 BM 8055","TATA ZEST - Blue","S Hareesh","9493707194"));
-        driverlist.add(new DriverDetails("KA 51 BM 1234","Maruthi Swift - White","R Mithu Lal","7010354978"));
-        driverlist.add(new DriverDetails("KA 03 BM 7777","TATA INDICA - Silver","S Hareesh","7382108907"));
-        driverlist.add(new DriverDetails("KA 03 BM 9999","TATA TIAGO - Orange","R Mithu Lal","9154241107"));
-        rideNumber = riders.getText().toString().trim();
+        driverlist.add(new DriverDetails("KA 03 BM 8055", "TATA ZEST - Blue", "S Hareesh", "9493707194"));
+        driverlist.add(new DriverDetails("KA 51 BM 1234", "Maruthi Swift - White", "R Mithu Lal", "7010354978"));
+        driverlist.add(new DriverDetails("KA 03 BM 7777", "TATA INDICA - Silver", "S Hareesh", "7382108907"));
+        driverlist.add(new DriverDetails("KA 03 BM 9999", "TATA TIAGO - Orange", "R Mithu Lal", "9154241107"));
 
-        ArrayList<String > list = new ArrayList<>();
-        for(int i=0;i<driverlist.size();i++){
+
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < driverlist.size(); i++)
+        {
             list.add(driverlist.get(i).vehicleNumber);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.select_dialog_item, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_item, list);
 
         vehicleNumber.setThreshold(2);
         vehicleNumber.setAdapter(adapter);
 
-        vehicleNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        vehicleNumber.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-                 selectedVehicleNumer = (String) arg0.getAdapter().getItem(arg2);
+                                    long arg3)
+            {
+                selectedVehicleNumer = (String) arg0.getAdapter().getItem(arg2);
 
-                for(int i=0;i<driverlist.size();i++){
-                   if(driverlist.get(i).vehicleNumber.equalsIgnoreCase(selectedVehicleNumer)){
-                       vehicleModel.setText(driverlist.get(i).getVehicleModel());
-                       vehicleModelNumber = driverlist.get(i).getVehicleModel();
-                       driverName.setText(driverlist.get(i).driverName);
-                       driverNa=driverlist.get(i).driverName;
-                       driverNumber.setText(driverlist.get(i).driverNumber);
-                       driverNo =driverlist.get(i).driverNumber;
-                       desination = destinationText.getText().toString();
+                for (int i = 0; i < driverlist.size(); i++)
+                {
+                    if (driverlist.get(i).vehicleNumber.equalsIgnoreCase(selectedVehicleNumer))
+                    {
+                        vehicleModel.setText(driverlist.get(i).getVehicleModel());
+                        vehicleModelNumber = driverlist.get(i).getVehicleModel();
+                        driverName.setText(driverlist.get(i).driverName);
+                        driverNa = driverlist.get(i).driverName;
+                        driverNumber.setText(driverlist.get(i).driverNumber);
+                        driverNo = driverlist.get(i).driverNumber;
+                        desination = destinationText.getText().toString();
 
-                   }
+                    }
                 }
             }
         });
-
 
         provideCab.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                writeNewPost(uid,empId, selectedVehicleNumer,vehicleModelNumber,driverNa,driverNo,desination,rideNumber);
-
+                if (rideNumber != null && rideNumber.length() > 0)
+                {
+                    loadingDialog.show();
+                    writeNewPost(uid, empId, selectedVehicleNumer, vehicleModelNumber, driverNa, driverNo, desination, rideNumber);
+                }
             }
         });
-
         return cabApprovalView;
     }
 
 
-    private void writeNewPost(String uid, String id,String selectedVehicleNumer,String vehicleModelNumber, String driverNa,String driverNo,String desination,String rideNumber) {
+    private void writeNewPost(String uid, String id, String selectedVehicleNumer, String vehicleModelNumber, String driverNa, String driverNo, String desination, String rideNumber)
+    {
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(uid).child(id);
         mDatabase.child("facility_status").setValue("true");
+        mDatabase.child("facilityDecision").setValue("true");
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         String currentDateandTime = sdf.format(new Date());
         System.out.println("current time date" + currentDateandTime);
         msendcabDetailData = FirebaseDatabase.getInstance().getReference().child("CabDetails").child(day);
-        RideEmployeeDetail rideEmployeeDetail =  new RideEmployeeDetail(selectedVehicleNumer,driverNa,vehicleModelNumber,driverNo,"2",desination,currentDateandTime);
+        RideEmployeeDetail rideEmployeeDetail = new RideEmployeeDetail(selectedVehicleNumer, driverNa, vehicleModelNumber, driverNo, rideNumber, desination, currentDateandTime);
         msendcabDetailData.child(id).setValue(rideEmployeeDetail);
 
-      String notificationKey=   FirebaseNotification.not(String.valueOf(gen()), rigstrationToken, getActivity());
-         if(notificationKey.length()>0){
-             notificationUser(notificationKey,"Cab is Approval","Cab will start at at "+currentDateandTime + " and will pickup by driver "+ driverNa ,getActivity());
-         }
+        String notificationKey = FirebaseNotification.not(String.valueOf(gen()), rigstrationToken, getActivity());
+        if (notificationKey.length() > 0)
+        {
+
+            notificationUser(notificationKey, "Cab is Approval", "Cab will start at at " + currentDateandTime + " and will pickup by driver " + driverNa, getActivity());
+            loadingDialog.dismiss();
+        } else
+        {
+            loadingDialog.dismiss();
+            HelperMethods.showDialog(getActivity(), " Error", "FCM server is down please try again later...");
+        }
 
     }
+
     public int gen()
     {
         Random r = new Random(System.currentTimeMillis());
         return 10000 + r.nextInt(20000);
     }
-    void notificationUser(String notification,String title,String body,Context mContext)
+
+    void notificationUser(String notification, String title, String body, Context mContext)
     {
      /*Post data*/
         final RequestQueue requestQueue;
@@ -204,8 +258,9 @@ public class ApproveCab extends Fragment {
 
                         String responseId = response.optString("success");
                         //  NotificationUser(notification);
-                        if(Integer.parseInt(responseId)>0){
-                          getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        if (Integer.parseInt(responseId) > 0)
+                        {
+                            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                             HelperMethods.replaceFragment(getActivity(), MainActivity.frameLayout.getId(), new FacilityFragment(), true);
 
                             Log.d("response", String.valueOf(responseId));

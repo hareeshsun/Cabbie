@@ -23,77 +23,91 @@ import java.util.ArrayList;
  * Created by hareeshs on 07-07-2018.
  */
 
-public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder> {
+public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder>
+{
 
     ArrayList<FacilityDataContainer> facilityDataList;
     FacilityFragment fragment;
 
-    public FacilityAdapter(ArrayList<FacilityDataContainer> list, FacilityFragment fragment) {
+    public FacilityAdapter(ArrayList<FacilityDataContainer> list, FacilityFragment fragment)
+    {
         this.facilityDataList = list;
         this.fragment = fragment;
     }
 
 
     @Override
-    public FacilityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FacilityViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewGroup mainGroup = (ViewGroup) layoutInflater.inflate(R.layout.faclity_home_item_list, parent, false);
         return new FacilityViewHolder(mainGroup);
     }
 
     @Override
-    public void onBindViewHolder(final FacilityViewHolder holder, int position) {
-       final FacilityDataContainer cabRequestList = facilityDataList.get(position);
+    public void onBindViewHolder(final FacilityViewHolder holder, int position)
+    {
+        final FacilityDataContainer cabRequestList = facilityDataList.get(position);
         holder.employeeName.setText(cabRequestList.employee_name);
         holder.employeeID.setText(cabRequestList.employee_id);
         holder.destination.setText(cabRequestList.employee_desitnation);
         String formattedManager = "by %s";
-        holder.approvedBy.setText(String.format(formattedManager,cabRequestList.employee_manger_name));
+        holder.approvedBy.setText(String.format(formattedManager, cabRequestList.employee_manger_name));
 
-        if(cabRequestList.manager_status != null && cabRequestList.manager_status.equalsIgnoreCase("true")){
+        if (cabRequestList.manager_status != null && cabRequestList.manager_status.equalsIgnoreCase("true"))
+        {
             holder.stamp.setImageResource(R.drawable.ic_approved);
-        }
-        else {
+        } else
+        {
             holder.stamp.setImageResource(R.drawable.ic_pending);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-                if(holder.facilityOptionslayout.getVisibility() == View.GONE){
+            public void onClick(View view)
+            {
+                if (holder.facilityOptionslayout.getVisibility() == View.GONE)
+                {
                     holder.facilityOptionslayout.setVisibility(View.VISIBLE);
-                }
-                else
+                } else
                     holder.facilityOptionslayout.setVisibility(View.GONE);
             }
         });
 
-        holder.approved.setOnClickListener(new View.OnClickListener() {
+        holder.approved.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-              //  getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(cabRequestList.employee_desitnation,cabRequestList.uid,cabRequestList.employee_id,cabRequestList.registrationToken), true);
+            public void onClick(View view)
+            {
+                //  getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(cabRequestList.employee_desitnation, cabRequestList.uid, cabRequestList.employee_id, cabRequestList.registrationToken), true);
 
             }
         });
 
-        holder.rejected.setOnClickListener(new View.OnClickListener() {
+        holder.rejected.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new RejectCab(), true);
+            public void onClick(View view)
+            {
+                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new RejectCab(cabRequestList.registrationToken, cabRequestList.uid, cabRequestList.employee_id), true);
             }
         });
 
-        holder.cabDetails.setOnClickListener(new View.OnClickListener() {
+        holder.cabDetails.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
 
             }
         });
     }
 
     @Override
-    public int getItemCount() {
-        return facilityDataList != null ? facilityDataList.size():0;
+    public int getItemCount()
+    {
+        return facilityDataList != null ? facilityDataList.size() : 0;
     }
 }

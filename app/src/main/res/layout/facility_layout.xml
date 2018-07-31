@@ -3,13 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:layout_margin="5dp">
+              android:layout_margin="5dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/facilityRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
     </android.support.v7.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/sadSmiley"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sad_smiley"
+        android:visibility="gone"/>
 
 </LinearLayout>

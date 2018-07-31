@@ -28,14 +28,8 @@ public class MessageReceiver extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
-
-        Log.d("test",remoteMessage.getNotification().toString());
-
         String title = remoteMessage.getNotification().getTitle();
         String message = remoteMessage.getNotification().getBody();
-
-
        showNotifications(title, message);
     }
 

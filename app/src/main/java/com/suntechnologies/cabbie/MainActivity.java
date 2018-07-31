@@ -1,6 +1,7 @@
 package com.suntechnologies.cabbie;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -47,7 +48,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NavigationView.OnNavigationItemSelectedListener
+{
 
     public static FrameLayout frameLayout;
     public static boolean isNotifyCountVisible = false;
@@ -60,11 +62,16 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     DatabaseReference managerDataRef;
     ArrayList<String> userIDList = new ArrayList<>();
     NavigationView navigationView;
+    SharedPreferences.Editor editor;
+    SharedPreferences preferences;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        preferences = getSharedPreferences("USERDATA", Context.MODE_PRIVATE);
+        editor = preferences.edit();
         Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
         ActionBar actionBar = getSupportActionBar();
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         actionBar.setTitle(R.string.header_name);
 
         ImageView notification = (ImageView) findViewById(R.id.notification);
-        ImageView requestCab = (ImageView) findViewById(R.id.cabRequest);
+        final ImageView requestCab = (ImageView) findViewById(R.id.cabRequest);
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         quantityBadge = (TextView) findViewById(R.id.quantityBadge);
@@ -83,13 +90,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View header=navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
         final TextView employeeName = (TextView) header.findViewById(R.id.employeeName);
 
-        String USER_TOKEN_KEY = "USERTOKEN";
+        String USER_TOKEN_KEY = "USERDATA";
         SharedPreferences preferences = getSharedPreferences(USER_TOKEN_KEY, MODE_PRIVATE);
         String USER_UID = "USERUID";
         uid = preferences.getString(USER_UID, null);
@@ -101,7 +108,47 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         mDatabase = FirebaseDatabase.getInstance().getReference("usersData/" + uid);
         database = FirebaseDatabase.getInstance();
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.getValue() != null)
+                {
+                    userData = dataSnapshot.getValue(UserData.class);
+                    if (userData != null)
+                    {
+                        employeeName.setText(userData.firstName + " " + userData.lastName);
+                        hideItem(navigationView, false);
+                        mDatabase.child("registrationToken").setValue(registrationToken);
+                        requestCab.setVisibility(View.VISIBLE);
+                    }
+
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId), false);
+                } else
+                {
+                    employeeName.setText("Admin");
+                    FirebaseUser firebaseUser = auth.getCurrentUser();
+                    hideItem(navigationView, true);
+                    if (firebaseUser != null)
+                    {
+                        requestCab.setVisibility(View.GONE);
+                        database.getReference("admin").child("registrationToken").setValue(registrationToken);
+                        editor.putString(String.valueOf(R.string.fetch_designation), "Admin");
+                        editor.apply();
+                    }
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new FacilityFragment(), true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
+/*        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -109,14 +156,20 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     if(userData != null) {
                         employeeName.setText(userData.firstName + " " + userData.lastName);
                         hideItem(navigationView, false);
+                        mDatabase.child("registrationToken").setValue(registrationToken);
+                        requestCab.setVisibility(View.VISIBLE);
                     }
-                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, false), false);
+
+                    HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, true), false);
                 } else {
                     employeeName.setText("Admin");
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     hideItem(navigationView, true);
                     if (firebaseUser != null) {
+                        requestCab.setVisibility(View.GONE);
                         database.getReference("admin").child("registrationToken").setValue(registrationToken);
+                        editor.putString(String.valueOf(R.string.fetch_designation), "Admin");
+                        editor.apply();
                     }
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new FacilityFragment(), true);
@@ -127,28 +180,37 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
-        requestCab.setOnClickListener(new View.OnClickListener() {
+        });*/
+        requestCab.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new CabRequest(), true);
             }
         });
 
-        notification.setOnClickListener(new View.OnClickListener() {
+        notification.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 managerDataRef = FirebaseDatabase.getInstance().getReference("managerData");
-                managerDataRef.addValueEventListener(new ValueEventListener() {
+                managerDataRef.addValueEventListener(new ValueEventListener()
+                {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot managerObject : dataSnapshot.getChildren()){
-                            for(DataSnapshot employeeRequest : managerObject.getChildren()){
-                                for(DataSnapshot employeeID : employeeRequest.getChildren()){
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                    {
+                        for (DataSnapshot managerObject : dataSnapshot.getChildren())
+                        {
+                            for (DataSnapshot employeeRequest : managerObject.getChildren())
+                            {
+                                for (DataSnapshot employeeID : employeeRequest.getChildren())
+                                {
                                     EmployeeUserID userID = employeeID.getValue(EmployeeUserID.class);
-                                    if(userID != null)
-                                    userIDList.add(userID.employeeUserId);
+                                    if (userID != null)
+                                        userIDList.add(userID.employeeUserId);
                                 }
                             }
                         }
@@ -156,7 +218,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    public void onCancelled(@NonNull DatabaseError databaseError)
+                    {
 
                     }
                 });
@@ -166,20 +229,27 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     @Override
-    public void onBackStackChanged() {
+    public void onBackStackChanged()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
+        {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else
+        {
             super.onBackPressed();
         }
     }
-    void hideItem(NavigationView navigationView, boolean flag){
+
+    void hideItem(NavigationView navigationView, boolean flag)
+    {
         Menu nav_Menu = navigationView.getMenu();
-        if(flag){
+        if (flag)
+        {
             nav_Menu.findItem(R.id.nav_previous).setVisible(false);
             nav_Menu.findItem(R.id.nav_account).setVisible(false);
-        }else{
+        } else
+        {
             nav_Menu.findItem(R.id.manager_details).setVisible(false);
             nav_Menu.findItem(R.id.cab_details).setVisible(false);
         }
@@ -188,48 +258,57 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
+    {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if(id == R.id.nav_home){
-            if(userData != null) {
+        if (id == R.id.nav_home)
+        {
+            if (userData != null)
+            {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId, false), false);
-            }
-            else {
+                HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId), false);
+            } else
+            {
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new FacilityFragment(), true);
             }
-        }
-        else if (id == R.id.nav_account) {
+        } else if (id == R.id.nav_account)
+        {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new AccountDetails(userData, uid), true);
-        } else if (id == R.id.nav_boarding) {
+        } else if (id == R.id.nav_boarding)
+        {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new OnBoarding(), true);
-        } else if (id == R.id.nav_previous) {
+        } else if (id == R.id.nav_previous)
+        {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new PreviousRideDetails(), true);
 
-        } else if (id == R.id.cab_details) {
+        } else if (id == R.id.cab_details)
+        {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(),new CabDetails(), true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new CabDetails(), true);
 
-        }
-        else if (id == R.id.manager_details) {
+        } else if (id == R.id.manager_details)
+        {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new ManagerDetails(), true);
 
-        }
-        else if (id == R.id.nav_emergency) {
+        } else if (id == R.id.nav_emergency)
+        {
 
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmergencyDetails(), true);
-        } else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout)
+        {
+            FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(MainActivity.this, LoginPage.class);
             startActivity(intent);
             finish();
-        } else if (id == R.id.nav_about_us) {
+        } else if (id == R.id.nav_about_us)
+        {
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -238,7 +317,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         return true;
     }
 
-    private void openNotification(){
+    private void openNotification()
+    {
         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new Notification(userIDList), false);
     }

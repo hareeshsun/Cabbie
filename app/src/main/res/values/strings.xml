@@ -42,6 +42,7 @@
         <item>Settings</item>
     </string-array>
 
+    <!--USER DATA - To fetch SQLite data-->
     <string name="activity_title_about_us">About Us</string>
     <string name="activity_title_privacy_policy">Privacy Policy</string>
     <string name="action_clear_all">Clear All</string>
@@ -49,4 +50,19 @@
     <string name="action_mark_all_read">Mark All as Read</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="designation">Designation</string>
+
+    <string name="fetch_address">ADDRESS</string>
+    <string name="fetch_currentAddress">CURRENT ADDRESS</string>
+    <string name="fetch_designation">DESIGNATION</string>
+    <string name="fetch_email">EMAIL ADDRESSS</string>
+
+    <string name="fetch_employeeID">EMPLOYEE ID</string>
+    <string name="fetch_firstName">FIRST NAME</string>
+    <string name="fetch_landmark">LANDMARK</string>
+    <string name="fetch_lastName">FIRST NAME</string>
+
+    <string name="fetch_phoneNumber">PHONE NUMBER</string>
+    <string name="fetch_registrationToken">REGISTRATION TOKEN</string>
+    <string name="fetch_reportingManager">REPORTING MANAGER</string>
+    <string name="fetch_uid">UID</string>
 </resources>

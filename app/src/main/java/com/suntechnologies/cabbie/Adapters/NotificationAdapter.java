@@ -1,6 +1,8 @@
 package com.suntechnologies.cabbie.Adapters;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -41,6 +44,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+
+import dmax.dialog.SpotsDialog;
 
 /**
  * Created by hareeshs on 09-07-2018.
@@ -54,7 +60,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
     public String year, month, day;
     public String  employeeUid;
     public String  employeeId;
-
+    NotificationAdapter notificationAdapter;
+    Dialog loadingDialog;
 
     public NotificationAdapter(ArrayList<Employee> employeeArrayList, Notification fragment) {
         this.employeeArrayList = new ArrayList<>();
@@ -63,12 +70,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
         this.year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         this.month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         this.day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
+
     }
 
     @Override
     public NotificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewGroup mainGroup = (ViewGroup) layoutInflater.inflate(R.layout.notification_item, parent, false);
+        loadingDialog = new SpotsDialog(fragment.getActivity(),"Logging...");
         return new NotificationViewHolder(mainGroup);
     }
 
@@ -85,26 +94,39 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                 @Override
                 public void onClick(View view) {
 
+                           final String notificationKey = FirebaseNotification.not(String.valueOf(gen()),employee.registrationToken,fragment.getActivity());
+                    if(notificationKey.length()>0){
+                        loadingDialog.setTitle("Approving...");
+                        loadingDialog.show();
+                        employeeArrayList.get(position).manager_status = "true";
+                        employeeId = employee.employee_id;
+                        employeeUid = employee.uid;
 
-                            employeeArrayList.get(position).manager_status = "true";
-                            employeeId = employee.employee_id;
-                            employeeUid = employee.uid;
-
-                            String notificationKey = FirebaseNotification.not(String.valueOf(gen()),employee.registrationToken,fragment.getActivity());
-                            if(notificationKey.length()>0){
-
-                                notificationUser(notificationKey,"Cab Approval","Manager is aaproval",fragment.getActivity());
-                            }
+                        notificationUser(notificationKey,"Cab Approval","Manager is aaproval",fragment.getActivity(),true);
+                    }
+                    else {
+                        Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                    }
 
                         }
-
-
 
             });
 
             holder.rejected.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    loadingDialog.setTitle("Rejecting...");
+                    loadingDialog.show();
+                    String notificationKey = FirebaseNotification.not(String.valueOf(gen()),employee.registrationToken,fragment.getActivity());
+                    if(notificationKey.length()>0){
+                        employeeArrayList.get(position).manager_status = "true";
+                        employeeId = employee.employee_id;
+                        employeeUid = employee.uid;
+                        notificationUser(notificationKey,"Cab Rejected","Manager is Rejected",fragment.getActivity(),false);
+                    }
+                    else {
+                        Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             });
@@ -118,7 +140,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
         Random r = new Random(System.currentTimeMillis());
         return 10000 + r.nextInt(20000);
     }
-    void notificationUser(final String notification, String title, String body, Context mContext)
+    void notificationUser(final String notification, String title, String body, Context mContext,final boolean requestStatus)
     {
      /*Post data*/
         final RequestQueue requestQueue;
@@ -157,10 +179,29 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                         if(Integer.parseInt(responseId)>0){
 
                             Log.d("response", String.valueOf(responseId));
-                            reference = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(employeeUid).child(employeeId);
-                            reference.child("manager_status").setValue("true");
-                            notifyDataSetChanged();
+                            if (requestStatus){
+                                reference = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(employeeUid).child(employeeId);
+                                reference.child("manager_status").setValue("true");
+                                reference.child("managerDecision").setValue("true");
 
+
+                                loadingDialog.dismiss();
+                                fragment.loadData();
+                            }else{
+                                reference = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(employeeUid).child(employeeId);
+                                reference.child("manager_status").setValue("false");
+                                reference.child("managerDecision").setValue("false");
+                                loadingDialog.dismiss();
+                                fragment.loadData();
+
+                            }
+
+/*                            fragment.getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new Notification(), true);*/
+
+                        }else{
+                            loadingDialog.dismiss();
+                            Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
                         }
 
 
@@ -191,5 +232,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
     @Override
     public int getItemCount() {
         return employeeArrayList != null ? employeeArrayList.size():0;
+    }
+
+    public String generateNotificationKey(String registrationToken){
+
+        String notificationKey = FirebaseNotification.not(String.valueOf(gen()),registrationToken,fragment.getActivity());
+        return notificationKey;
     }
 }
