@@ -93,6 +93,7 @@ public class EmployeeFragment extends Fragment
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
+                employeeCabRequestList.clear();
                 Employee employee = dataSnapshot.getValue(Employee.class);
                 if (employee != null)
                 {

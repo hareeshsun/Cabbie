@@ -30,6 +30,7 @@ public class MessageReceiver extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         String title = remoteMessage.getNotification().getTitle();
         String message = remoteMessage.getNotification().getBody();
+        MainActivity.countBadge++;
        showNotifications(title, message);
     }
 

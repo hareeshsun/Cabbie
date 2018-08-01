@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     NavigationView navigationView;
     SharedPreferences.Editor editor;
     SharedPreferences preferences;
-
+    static  int countBadge =0;
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         quantityBadge = (TextView) findViewById(R.id.quantityBadge);
+        quantityBadge.setText(String.valueOf(countBadge));
+        quantityBadge.setVisibility(View.VISIBLE);
 
         auth = FirebaseAuth.getInstance();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,8 +123,15 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     {
                         employeeName.setText(userData.firstName + " " + userData.lastName);
                         hideItem(navigationView, false);
-                        mDatabase.child("registrationToken").setValue(registrationToken);
-                        requestCab.setVisibility(View.VISIBLE);
+                        if(userData.designation.contains("Manager")){
+                            reference = FirebaseDatabase.getInstance().getReference().child("managerData").child(userData.firstName);
+                            reference.child("registrationToken").setValue(registrationToken);
+                            requestCab.setVisibility(View.VISIBLE);
+                        }else{
+                            mDatabase.child("registrationToken").setValue(registrationToken);
+                            requestCab.setVisibility(View.VISIBLE);
+                        }
+
                     }
 
                     HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmployeeFragment(uid, userData.employeeId), false);

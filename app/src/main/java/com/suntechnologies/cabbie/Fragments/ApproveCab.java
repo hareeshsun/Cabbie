@@ -1,7 +1,9 @@
 package com.suntechnologies.cabbie.Fragments;
 
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +18,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -37,6 +41,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -71,14 +76,15 @@ public class ApproveCab extends Fragment
     String rideNumber;
     String rigstrationToken;
     private Dialog loadingDialog;
-
-    // String rideNumber[] ={"1","2","3","4"};
-    public ApproveCab(String desination, String uid, String empId, String rigstrationToken)
+    TextView cabAvailableTime;
+    String  pickupTime;
+    public ApproveCab(String pickupTime, String desination, String uid, String empId, String rigstrationToken)
     {
         this.desination = desination;
         this.uid = uid;
         this.empId = empId;
         this.rigstrationToken = rigstrationToken;
+        this.pickupTime = pickupTime;
     }
 
     @Nullable
@@ -92,16 +98,15 @@ public class ApproveCab extends Fragment
         vehicleModel = (EditText) cabApprovalView.findViewById(R.id.vehicleModel);
         driverNumber = (EditText) cabApprovalView.findViewById(R.id.driverNumber);
         driverName = (EditText) cabApprovalView.findViewById(R.id.driverName);
+        cabAvailableTime = (TextView) cabApprovalView.findViewById(R.id.cabAvailableTime);
         spinner = (Spinner) cabApprovalView.findViewById(R.id.riders);
-        //  spinner.setText("3");
+
 
         List<String> rideNumberArrayList = new ArrayList<String>();
         rideNumberArrayList.add("1");
         rideNumberArrayList.add("2");
         rideNumberArrayList.add("3");
         rideNumberArrayList.add("4");
-        // rideNumberArrayList.add("5");
-        // rideNumberArrayList.add("6");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, rideNumberArrayList);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -163,9 +168,35 @@ public class ApproveCab extends Fragment
                         driverNumber.setText(driverlist.get(i).driverNumber);
                         driverNo = driverlist.get(i).driverNumber;
                         desination = destinationText.getText().toString();
-
+                        cabAvailableTime.setText(pickupTime);
                     }
                 }
+            }
+        });
+
+        cabAvailableTime.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Calendar mcurrentTime = Calendar.getInstance();
+                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener()
+                {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
+                    {
+
+                        pickupTime=   String.format("%02d:%02d", selectedHour, selectedMinute);
+                        cabAvailableTime.setText(pickupTime);
+                        cabAvailableTime.setPaintFlags(cabAvailableTime.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        ;
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
             }
         });
 
@@ -199,19 +230,19 @@ public class ApproveCab extends Fragment
         String currentDateandTime = sdf.format(new Date());
         System.out.println("current time date" + currentDateandTime);
         msendcabDetailData = FirebaseDatabase.getInstance().getReference().child("CabDetails").child(day);
-        RideEmployeeDetail rideEmployeeDetail = new RideEmployeeDetail(selectedVehicleNumer, driverNa, vehicleModelNumber, driverNo, rideNumber, desination, currentDateandTime);
+        RideEmployeeDetail rideEmployeeDetail = new RideEmployeeDetail(selectedVehicleNumer, driverNa, vehicleModelNumber, driverNo, rideNumber, desination, pickupTime);
         msendcabDetailData.child(id).setValue(rideEmployeeDetail);
 
         String notificationKey = FirebaseNotification.not(String.valueOf(gen()), rigstrationToken, getActivity());
         if (notificationKey.length() > 0)
         {
 
-            notificationUser(notificationKey, "Cab is Approval", "Cab will start at at " + currentDateandTime + " and will pickup by driver " + driverNa, getActivity());
+            notificationUser(notificationKey, "Cab is Approval", "Cab will start at at " + pickupTime + " and will pickup by driver " + driverNa, getActivity());
             loadingDialog.dismiss();
         } else
         {
             loadingDialog.dismiss();
-            HelperMethods.showDialog(getActivity(), " Error", "FCM server is down please try again later...");
+            HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
         }
 
     }

@@ -125,7 +125,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                         notificationUser(notificationKey,"Cab Rejected","Manager is Rejected",fragment.getActivity(),false);
                     }
                     else {
-                        Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                        HelperMethods.showDialog(fragment.getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
                     }
 
                 }
@@ -201,7 +201,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
 
                         }else{
                             loadingDialog.dismiss();
-                            Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                            HelperMethods.showDialog(fragment.getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
                         }
 
 

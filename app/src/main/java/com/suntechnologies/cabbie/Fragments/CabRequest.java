@@ -185,16 +185,16 @@ public class CabRequest extends Fragment
 
             }
         });
-        managerData = FirebaseDatabase.getInstance().getReference("managerData/" + reportTo);
-        managerData.addValueEventListener(new ValueEventListener()
+        managerData = FirebaseDatabase.getInstance().getReference("managerData/Vasu");
+        managerData.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
                 if (dataSnapshot != null)
                 {
-                    String managerRegistrationToken = (String) dataSnapshot.child("registrationToken").getValue();
-                    //  Log.d("testof data",managerRegistrationToken);
+                    managerToken = (String) dataSnapshot.child("registrationToken").getValue();
+                     Log.d("testof data",managerToken);
                 }
             }
 
@@ -229,10 +229,9 @@ public class CabRequest extends Fragment
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
                     {
-                        pickUpTime.setText(selectedHour + ":" + selectedMinute);
-                        pickupTime = selectedHour + ":" + selectedMinute;
+                        pickupTime=   String.format("%02d:%02d", selectedHour, selectedMinute);
+                        pickUpTime.setText(pickupTime);
                         pickUpTime.setPaintFlags(pickUpTime.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                        ;
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -292,8 +291,17 @@ public class CabRequest extends Fragment
         // Log.d("sdfsf",managerToken);
         ArrayList<String> ids = new ArrayList<>();
         ids.add(adminToken);
+        ids.add(managerToken);
 
-        String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
+       // String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
+        String notificationKey = "";
+try
+{
+    notificationKey=  FirebaseNotification.addNotificationKey(String.valueOf(gen()), ids, getActivity());
+}catch (Exception e){
+
+}
+
 
         if (notificationKey != null && notificationKey.length() > 0)
         {
@@ -301,7 +309,7 @@ public class CabRequest extends Fragment
             notificationUser(notificationKey, "New Cab Request ", "I need to drop at " + destination, getActivity());
         } else
         {
-            HelperMethods.showDialog(getActivity(), "Error", "Something went wrong...");
+            HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
         }
     }
 
@@ -356,7 +364,7 @@ public class CabRequest extends Fragment
                         } else
                         {
                             loadingDialog.dismiss();
-                            HelperMethods.showDialog(getActivity(), "Error", "Something went wrong!");
+                            HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
                         }
 
                     }

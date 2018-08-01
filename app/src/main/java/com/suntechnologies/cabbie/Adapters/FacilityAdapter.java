@@ -80,8 +80,8 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityViewHolder>
             @Override
             public void onClick(View view)
             {
-                //  getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(cabRequestList.employee_desitnation, cabRequestList.uid, cabRequestList.employee_id, cabRequestList.registrationToken), true);
+
+                HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new ApproveCab(cabRequestList.pickuptime,cabRequestList.employee_desitnation, cabRequestList.uid, cabRequestList.employee_id, cabRequestList.registrationToken), true);
 
             }
         });
