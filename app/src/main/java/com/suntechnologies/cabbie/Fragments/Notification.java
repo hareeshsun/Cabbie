@@ -103,7 +103,7 @@ public class Notification extends Fragment {
                                    if(employee.managerDecision.isEmpty() )
                                     employeesaArrayList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name,
                                             employee.employee_desitnation, employee.manager_status, employee.facility_status, employee.pickuptime,
-                                            employee.date, employee.registrationToken, employee.uid, "", ""));
+                                            employee.date, employee.registrationToken, employee.uid, "", "", employee.emergencyData));
                             }
                             notificationAdapter = new NotificationAdapter(employeesaArrayList, Notification.this);
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));

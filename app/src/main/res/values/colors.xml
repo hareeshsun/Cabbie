@@ -13,6 +13,7 @@
     <color name="gray">#737171</color>
     <color name="lightGray">#aba7a7</color>
     <color name="blue">#050ec2</color>
+    <color name="lightBlue">#3994d1</color>
     <color name="duskYellow">#cccc00</color>
     <color name="recyclerViewBackground">#edecec</color>
     <color name="lightYellow">#e9e968</color>

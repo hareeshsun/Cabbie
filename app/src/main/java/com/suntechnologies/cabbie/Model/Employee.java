@@ -2,6 +2,8 @@ package com.suntechnologies.cabbie.Model;
 
 import android.os.Parcelable;
 
+import com.suntechnologies.cabbie.DataHolders.EmergencyData;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -23,13 +25,14 @@ public class Employee implements Serializable {
     public String uid;
     public String managerDecision;
     public String facilityDecision;
+    public EmergencyData emergencyData;
 
     Employee(){
 
     }
 
-    public Employee(String employee_name, String employee_id, String employee_manger_name,String employee_desitnation,
-                    String manager_status, String facility_status, String pickuptime, String date, String registrationToken, String uid, String managerDecision, String facilityDecision) {
+    public Employee(String employee_name, String employee_id, String employee_manger_name, String employee_desitnation,
+                    String manager_status, String facility_status, String pickuptime, String date, String registrationToken, String uid, String managerDecision, String facilityDecision, EmergencyData emergencyData) {
         this.employee_name = employee_name;
         this.employee_id = employee_id;
         this.employee_manger_name = employee_manger_name;
@@ -42,6 +45,7 @@ public class Employee implements Serializable {
         this.uid =uid;
         this.managerDecision = managerDecision;
         this.facilityDecision = facilityDecision;
+        this.emergencyData = emergencyData;
 
     }
 

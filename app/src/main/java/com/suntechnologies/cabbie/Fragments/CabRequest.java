@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.suntechnologies.cabbie.Adapters.SpinnerAdapter;
+import com.suntechnologies.cabbie.DataHolders.EmergencyData;
 import com.suntechnologies.cabbie.HelperMethods;
 import com.suntechnologies.cabbie.MainActivity;
 import com.suntechnologies.cabbie.Model.Employee;
@@ -262,7 +263,7 @@ public class CabRequest extends Fragment
     private void writeNewUser(String year, String month, String day, String requestNmuber, final String uid, String employeeName, final String emplyoeeId, String destination, final String reportingManger, String pickupTime, String date)
     {
         mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + year + "/" + month + "/" + day + "/" + uid);
-        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination, "false", "false", pickupTime, date, userData.registrationToken, uid, "", "");
+        Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination, "false", "false", pickupTime, date, userData.registrationToken, uid, "", "", new EmergencyData());
         mDatabase.child(emplyoeeId).setValue(employee);
 
         managerRef = FirebaseDatabase.getInstance().getReference("managerData");
@@ -293,16 +294,7 @@ public class CabRequest extends Fragment
         ids.add(adminToken);
         ids.add(managerToken);
 
-       // String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
-        String notificationKey = "";
-try
-{
-    notificationKey=  FirebaseNotification.addNotificationKey(String.valueOf(gen()), ids, getActivity());
-}catch (Exception e){
-
-}
-
-
+        String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
         if (notificationKey != null && notificationKey.length() > 0)
         {
             loadingDialog.show();
