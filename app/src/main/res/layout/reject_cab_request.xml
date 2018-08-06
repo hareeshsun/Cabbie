@@ -36,7 +36,7 @@
             <Spinner
                 android:id="@+id/rejectReason"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="40dp">
 
             </Spinner>
 
@@ -46,11 +46,14 @@
         <EditText
             android:id="@+id/rejectOptional"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_18"
             android:layout_margin="5dp"
             android:padding="5dp"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="false"
+            android:inputType="text"
             android:hint="message(optional)"/>
 
         <Button

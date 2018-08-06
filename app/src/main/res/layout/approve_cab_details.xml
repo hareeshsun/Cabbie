@@ -41,6 +41,7 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:padding="5dp"
+            android:imeOptions="actionDone"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_16"/>
 
@@ -72,6 +73,8 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:padding="5dp"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="false"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_16"/>
 
@@ -103,6 +106,8 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:textColor="@color/black"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="false"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_16"/>
 
@@ -133,6 +138,8 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:textColor="@color/black"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="false"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_16"/>
 
@@ -207,6 +214,8 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:textColor="@color/black"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="false"
             android:background="@drawable/white_background_with_black_border"
             android:textSize="@dimen/text_size_16"/>
 

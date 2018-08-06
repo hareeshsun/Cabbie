@@ -163,7 +163,7 @@ public class SignUpPage extends AppCompatActivity {
                     else if(mobileNumber.length()!=10){
                         mobileNumberTxt.setError("Invalid mobile number");
                     }else if(!password.equals(confirmPassword)){
-                        Toast.makeText(SignUpPage.this,"password and confirmed password is not matching!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpPage.this,"password and confirmed password is notificationSingleRequest matching!",Toast.LENGTH_SHORT).show();
                     }else{
                         loadingDialog.show();
                         mAuth.createUserWithEmailAndPassword(emailAddress.concat("@suntechnologies.com"), password)

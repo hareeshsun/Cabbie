@@ -59,6 +59,7 @@ public class FacilityFragment extends Fragment
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
         cabRequestList = new ArrayList<>();
+
         mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day);
         mDatabase.addValueEventListener(new ValueEventListener()
         {
@@ -67,6 +68,7 @@ public class FacilityFragment extends Fragment
             {
                 for (DataSnapshot uniqueSnapshot : dataSnapshot.getChildren())
                 {
+                    cabRequestList.clear();
                     for (DataSnapshot employeeId : uniqueSnapshot.getChildren())
                     {
                         FacilityDataContainer dataContainer = employeeId.getValue(FacilityDataContainer.class);

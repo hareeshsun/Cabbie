@@ -36,6 +36,7 @@ import com.suntechnologies.cabbie.MainActivity;
 import com.suntechnologies.cabbie.Model.RideEmployeeDetail;
 import com.suntechnologies.cabbie.R;
 import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+import com.suntechnologies.cabbie.firebaseNotification.NotificationListener;
 
 import org.json.JSONObject;
 
@@ -205,7 +206,7 @@ public class ApproveCab extends Fragment
             @Override
             public void onClick(View v)
             {
-                if (rideNumber != null && rideNumber.length() > 0)
+                if (rideNumber != null  && selectedVehicleNumer != null )
                 {
                     loadingDialog.show();
                     writeNewPost(uid, empId, selectedVehicleNumer, vehicleModelNumber, driverNa, driverNo, desination, rideNumber);
@@ -216,7 +217,7 @@ public class ApproveCab extends Fragment
     }
 
 
-    private void writeNewPost(String uid, String id, String selectedVehicleNumer, String vehicleModelNumber, String driverNa, String driverNo, String desination, String rideNumber)
+    private void writeNewPost(String uid, String id, String selectedVehicleNumer, String vehicleModelNumber, final String driverNa, String driverNo, String desination, String rideNumber)
     {
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
@@ -232,18 +233,31 @@ public class ApproveCab extends Fragment
         msendcabDetailData = FirebaseDatabase.getInstance().getReference().child("CabDetails").child(day);
         RideEmployeeDetail rideEmployeeDetail = new RideEmployeeDetail(selectedVehicleNumer, driverNa, vehicleModelNumber, driverNo, rideNumber, desination, pickupTime);
         msendcabDetailData.child(id).setValue(rideEmployeeDetail);
+      FirebaseNotification.notificationSingleRequest(String.valueOf(gen()), rigstrationToken, getActivity(), new NotificationListener()
+      {
+          @Override
+          public void notificationKey(JSONObject notificationValue)
+          {
+                       String notificationKey = notificationValue.optString("notification_key") ;
+              if (notificationKey.length() > 0)
+              {
 
-        String notificationKey = FirebaseNotification.not(String.valueOf(gen()), rigstrationToken, getActivity());
-        if (notificationKey.length() > 0)
-        {
+                  notificationUser(notificationKey, "Cab is Approval", "Cab will start at at " + pickupTime + " and will pickup by driver " + driverNa, getActivity());
+                  loadingDialog.dismiss();
+              } else
+              {
+                  loadingDialog.dismiss();
+                  HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+              }
+          }
 
-            notificationUser(notificationKey, "Cab is Approval", "Cab will start at at " + pickupTime + " and will pickup by driver " + driverNa, getActivity());
-            loadingDialog.dismiss();
-        } else
-        {
-            loadingDialog.dismiss();
-            HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
-        }
+          @Override
+          public void error(String error)
+          {
+              loadingDialog.dismiss();
+              HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+          }
+      });
 
     }
 

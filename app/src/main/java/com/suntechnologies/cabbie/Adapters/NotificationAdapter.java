@@ -2,9 +2,6 @@ package com.suntechnologies.cabbie.Adapters;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,20 +16,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
-import com.suntechnologies.cabbie.Fragments.FacilityFragment;
 import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.HelperMethods;
-import com.suntechnologies.cabbie.MainActivity;
 import com.suntechnologies.cabbie.Model.Employee;
 import com.suntechnologies.cabbie.R;
 import com.suntechnologies.cabbie.ViewHolder.NotificationViewHolder;
 import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+import com.suntechnologies.cabbie.firebaseNotification.NotificationListener;
 
 import org.json.JSONObject;
 
@@ -40,11 +32,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.Timer;
 
 import dmax.dialog.SpotsDialog;
 
@@ -94,19 +84,37 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                 @Override
                 public void onClick(View view) {
 
-                           final String notificationKey = FirebaseNotification.not(String.valueOf(gen()),employee.registrationToken,fragment.getActivity());
-                    if(notificationKey.length()>0){
-                        loadingDialog.setTitle("Approving...");
-                        loadingDialog.show();
-                        employeeArrayList.get(position).manager_status = "true";
-                        employeeId = employee.employee_id;
-                        employeeUid = employee.uid;
+                         ArrayList<String>stringArrayList = new ArrayList<String>();
+                           stringArrayList.add(employee.registrationToken);
+                          FirebaseNotification.notificationRequest(String.valueOf(gen()), stringArrayList, fragment.getActivity(), new NotificationListener()
+                           {
+                               @Override
+                               public void notificationKey(JSONObject notificationValue)
+                               {
+                                   Log.d("Response",String.valueOf(notificationValue));
+                                   String notificationKey = notificationValue.optString("notification_key") ;
+                                   if(notificationKey.length()>0){
+                                       loadingDialog.setTitle("Approving...");
+                                       loadingDialog.show();
+                                       employeeArrayList.get(position).manager_status = "true";
+                                       employeeId = employee.employee_id;
+                                       employeeUid = employee.uid;
 
-                        notificationUser(notificationKey,"Cab Approval","Manager is aaproval",fragment.getActivity(),true);
-                    }
-                    else {
-                        Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
-                    }
+                                       notificationUser(notificationKey,"Cab Approval","Manager is aaproval",fragment.getActivity(),true);
+                                   }
+                                   else {
+                                       loadingDialog.dismiss();
+                                       Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                                   }
+                               }
+                               @Override
+                               public void error(String error)
+                               {
+                                   loadingDialog.dismiss();
+                                   Toast.makeText(fragment.getActivity(),"Something went wrong. Please try again!",Toast.LENGTH_SHORT).show();
+                               }
+                           });
+
 
                         }
 
@@ -117,16 +125,34 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                 public void onClick(View view) {
                     loadingDialog.setTitle("Rejecting...");
                     loadingDialog.show();
-                    String notificationKey = FirebaseNotification.not(String.valueOf(gen()),employee.registrationToken,fragment.getActivity());
-                    if(notificationKey.length()>0){
-                        employeeArrayList.get(position).manager_status = "true";
-                        employeeId = employee.employee_id;
-                        employeeUid = employee.uid;
-                        notificationUser(notificationKey,"Cab Rejected","Manager is Rejected",fragment.getActivity(),false);
-                    }
-                    else {
-                        HelperMethods.showDialog(fragment.getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
-                    }
+                   FirebaseNotification.notificationSingleRequest(String.valueOf(gen()), employee.registrationToken, fragment.getActivity(), new NotificationListener()
+                    {
+                        @Override
+                        public void notificationKey(JSONObject notificationValue)
+                        {
+                            String notificationKey = notificationValue.optString("notification_key") ;
+                            if(notificationKey.length()>0){
+                                loadingDialog.dismiss();
+                                employeeArrayList.get(position).manager_status = "true";
+                                employeeId = employee.employee_id;
+                                employeeUid = employee.uid;
+                                notificationUser(notificationKey,"Cab Rejected","Manager is Rejected",fragment.getActivity(),false);
+                            }
+                            else {
+                                loadingDialog.dismiss();
+                                HelperMethods.showDialog(fragment.getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+                            }
+                        }
+
+                        @Override
+                        public void error(String error)
+                        {
+                            loadingDialog.dismiss();
+                            HelperMethods.showDialog(fragment.getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+
+                        }
+                    });
+
 
                 }
             });
@@ -155,7 +181,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
 
             jsonParams.put("title", title);
             jsonParams.put("body", body);
-            // data.put(new JSONObject(jsonParams));
             data.put("notification", new JSONObject(jsonParams));
 
         } catch (Exception e)
@@ -176,6 +201,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
 
                         String responseId = response.optString("success");
                         //  NotificationUser(notification);
+                        Log.d("response", String.valueOf(responseId));
                         if(Integer.parseInt(responseId)>0){
 
                             Log.d("response", String.valueOf(responseId));
@@ -183,21 +209,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
                                 reference = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(employeeUid).child(employeeId);
                                 reference.child("manager_status").setValue("true");
                                 reference.child("managerDecision").setValue("true");
-
-
                                 loadingDialog.dismiss();
                                 fragment.loadData();
                             }else{
                                 reference = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(employeeUid).child(employeeId);
-                                reference.child("manager_status").setValue("false");
+                                reference.child("manager_status").setValue("true");
                                 reference.child("managerDecision").setValue("false");
                                 loadingDialog.dismiss();
                                 fragment.loadData();
 
                             }
 
-/*                            fragment.getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            HelperMethods.replaceFragment(fragment.getActivity(), MainActivity.frameLayout.getId(), new Notification(), true);*/
 
                         }else{
                             loadingDialog.dismiss();
@@ -233,10 +255,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
     public int getItemCount() {
         return employeeArrayList != null ? employeeArrayList.size():0;
     }
-
-    public String generateNotificationKey(String registrationToken){
-
-        String notificationKey = FirebaseNotification.not(String.valueOf(gen()),registrationToken,fragment.getActivity());
-        return notificationKey;
+    public void setCardSets(ArrayList<Employee> cardSets) {
+        employeeArrayList = cardSets;
     }
+
 }

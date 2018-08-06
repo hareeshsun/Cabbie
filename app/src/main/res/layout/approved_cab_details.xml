@@ -199,7 +199,7 @@
         android:id="@+id/dismiss"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dismiss"
+        android:text="Close"
         android:background="@color/colorPrimary"
         android:textColor="@color/white"
         android:textSize="18sp"

@@ -45,8 +45,8 @@ public class Notification extends Fragment {
 
     NotificationAdapter notificationAdapter;
 
-    ArrayList<String> userId;
-    private ArrayList<Employee> employeesaArrayList;
+    ArrayList<String> userId = new ArrayList<>();
+    private ArrayList<Employee> employeesaArrayList = new ArrayList<>();
 
     String designation;
     RecyclerView recyclerView;
@@ -73,43 +73,63 @@ public class Notification extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View notificationView = inflater.inflate(R.layout.notification_layout, container, false);
         recyclerView = (RecyclerView) notificationView.findViewById(R.id.rvNotification);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(llm);
         loadData();
         return notificationView;
     }
 
     public void loadData(){
-        employeesaArrayList = new ArrayList<>();
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
         String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
         DatabaseReference notificationData;
+        employeesaArrayList.clear();
         if(designation.contains("Manager") || designation.contains("Admin") )
         {
-            if(userId != null)
-                for (int i = 0; i < userId.size(); i++)
-                {
-                    notificationData = FirebaseDatabase.getInstance().getReference("RequestCab" + "/" + year + "/" + month + "/" + day + "/" + userId.get(i));
+            employeesaArrayList.clear();
+          //  if(userId !=null &&userId.size()>0)
+                /*for (int i = 0; i < userId.size(); i++)
+                {*/
+                    notificationData = FirebaseDatabase.getInstance().getReference("RequestCab" + "/" + year + "/" + month + "/" + day );
                     notificationData.addValueEventListener(new ValueEventListener()
                     {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                         {
+                            if(dataSnapshot !=null) {
                             employeesaArrayList.clear();
-                            for (DataSnapshot employeeID : dataSnapshot.getChildren())
+                                for (DataSnapshot uniqueSnapshot : dataSnapshot.getChildren())
+                                {
+
+                            for (DataSnapshot employeeID : uniqueSnapshot.getChildren())
                             {
-                                Employee employee = employeeID.getValue(Employee.class);
-                              //  if (employee != null && ((designation.contains("Manager") && employee.managerDecision.isEmpty()) || (designation.contains("Admin") && employee.facilityDecision.isEmpty())))
-                                   Log.d("managerDecision",employee.managerDecision);
-                                   if(employee.managerDecision.isEmpty() )
-                                    employeesaArrayList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name,
-                                            employee.employee_desitnation, employee.manager_status, employee.facility_status, employee.pickuptime,
-                                            employee.date, employee.registrationToken, employee.uid, "", ""));
+                                Employee employee;  employee = employeeID.getValue(Employee.class);
+                                if (employee != null)
+                                {
+                                    if (employee.managerDecision.isEmpty() && employee.manager_status.equalsIgnoreCase("false"))
+                                        employeesaArrayList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name,
+                                                employee.employee_desitnation, employee.manager_status, employee.facility_status, employee.pickuptime,
+                                                employee.date, employee.registrationToken, employee.uid, "", ""));
+                                }
+
+                            }}
+                            if (employeesaArrayList.size() > 0)
+                            {
+                                if (null == notificationAdapter)
+                                {
+                                    notificationAdapter = new NotificationAdapter(employeesaArrayList, Notification.this);
+                                    recyclerView.setAdapter(notificationAdapter);
+                                } else
+                                {
+                                    notificationAdapter.setCardSets(employeesaArrayList);
+                                    notificationAdapter.notifyDataSetChanged();
+
+                                }
                             }
-                            notificationAdapter = new NotificationAdapter(employeesaArrayList, Notification.this);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-                            recyclerView.setHasFixedSize(true);
-                            recyclerView.setAdapter(notificationAdapter);
-                          //  notificationAdapter.notifyDataSetChanged();
+                        }
+
                         }
 
 
@@ -122,7 +142,7 @@ public class Notification extends Fragment {
 
 
                 }
-        }
+       // }
     }
 
 }

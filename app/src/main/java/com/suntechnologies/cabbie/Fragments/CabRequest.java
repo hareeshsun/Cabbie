@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompatSideChannelService;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import com.suntechnologies.cabbie.Model.Status;
 import com.suntechnologies.cabbie.Model.User;
 import com.suntechnologies.cabbie.R;
 import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+import com.suntechnologies.cabbie.firebaseNotification.NotificationListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,6 +56,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dmax.dialog.SpotsDialog;
 
@@ -89,6 +93,11 @@ public class CabRequest extends Fragment
     {
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -159,6 +168,26 @@ public class CabRequest extends Fragment
                         {
                             reportTo = userData.reportingManager;
                             managerName.setSelection(i);
+                            managerData = FirebaseDatabase.getInstance().getReference("managerData/"+userData.reportingManager);
+                            managerData.addListenerForSingleValueEvent(new ValueEventListener()
+                            {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                                {
+                                    if (dataSnapshot != null)
+                                    {
+                                        managerToken = (String) dataSnapshot.child("registrationToken").getValue();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError)
+                                {
+
+                                }
+                            });
+
                         }
                     }
                 }
@@ -169,6 +198,25 @@ public class CabRequest extends Fragment
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
                     {
                         reportTo = managerName.getSelectedItem().toString();
+                        managerData = FirebaseDatabase.getInstance().getReference("managerData/"+reportTo);
+                        managerData.addListenerForSingleValueEvent(new ValueEventListener()
+                        {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                            {
+                                if (dataSnapshot != null)
+                                {
+                                    managerToken = (String) dataSnapshot.child("registrationToken").getValue();
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError)
+                            {
+
+                            }
+                        });
                     }
 
                     @Override
@@ -185,25 +233,7 @@ public class CabRequest extends Fragment
 
             }
         });
-        managerData = FirebaseDatabase.getInstance().getReference("managerData/Vasu");
-        managerData.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if (dataSnapshot != null)
-                {
-                    managerToken = (String) dataSnapshot.child("registrationToken").getValue();
-                     Log.d("testof data",managerToken);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-
-            }
-        });
 
         SpinnerAdapter reportingManagerAdapter = new SpinnerAdapter(getActivity(), android.R.layout.simple_spinner_item, reportingManagerList);
         managerName.setAdapter(reportingManagerAdapter);
@@ -259,7 +289,7 @@ public class CabRequest extends Fragment
         return cabRequestView;
     }
 
-    private void writeNewUser(String year, String month, String day, String requestNmuber, final String uid, String employeeName, final String emplyoeeId, String destination, final String reportingManger, String pickupTime, String date)
+    private void writeNewUser(String year, String month, String day, String requestNmuber, final String uid, String employeeName, final String emplyoeeId, final String destination, final String reportingManger, String pickupTime, String date)
     {
         mDatabase = FirebaseDatabase.getInstance().getReference("RequestCab/" + year + "/" + month + "/" + day + "/" + uid);
         Employee employee = new Employee(employeeName, emplyoeeId, reportingManger, destination, "false", "false", pickupTime, date, userData.registrationToken, uid, "", "");
@@ -291,26 +321,35 @@ public class CabRequest extends Fragment
         // Log.d("sdfsf",managerToken);
         ArrayList<String> ids = new ArrayList<>();
         ids.add(adminToken);
+        if(managerToken !=null)
         ids.add(managerToken);
+       final String notificationKey = "";// FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
 
-       // String notificationKey = FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity());
-        String notificationKey = "";
-try
-{
-    notificationKey=  FirebaseNotification.addNotificationKey(String.valueOf(gen()), ids, getActivity());
-}catch (Exception e){
-
-}
-
-
-        if (notificationKey != null && notificationKey.length() > 0)
+        FirebaseNotification.notificationRequest(String.valueOf(gen()), ids, getActivity(), new NotificationListener()
         {
-            loadingDialog.show();
-            notificationUser(notificationKey, "New Cab Request ", "I need to drop at " + destination, getActivity());
-        } else
-        {
-            HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
-        }
+            @Override
+            public void notificationKey(JSONObject notificationValue)
+            {
+                if (notificationValue.optString("notification_key") != null && notificationValue.optString("notification_key").length() > 0)
+                {
+                    loadingDialog.dismiss();
+                    notificationUser(notificationValue.optString("notification_key"), "New Cab Request ", "I need to drop at "+destination, getActivity());
+                } else
+                {
+                    loadingDialog.dismiss();
+                    HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+                }
+            }
+
+            @Override
+            public void error(String error)
+            {
+                loadingDialog.dismiss();
+                HelperMethods.showDialog(getActivity(), " Sorry", "Problem connection to the server. Please try again later...");
+            }
+        });
+
+
     }
 
     public int gen()
@@ -352,6 +391,7 @@ try
                     {
                         String responseId = response.optString("success");
                         //  NotificationUser(notification);
+                        Log.d("response", String.valueOf(response));
                         if (Integer.parseInt(responseId) > 0)
                         {
                             getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);

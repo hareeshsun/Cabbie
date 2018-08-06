@@ -29,6 +29,7 @@ import com.suntechnologies.cabbie.HelperMethods;
 import com.suntechnologies.cabbie.MainActivity;
 import com.suntechnologies.cabbie.R;
 import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+import com.suntechnologies.cabbie.firebaseNotification.NotificationListener;
 
 import org.json.JSONObject;
 
@@ -78,13 +79,13 @@ public class RejectCab extends Fragment
         Button btnReject = (Button) rejectReasonView.findViewById(R.id.btnReject);
         loadingDialog = new SpotsDialog(getActivity(), "Cab is rejected ...");
         rejectedReason = new ArrayList<>();
-        rejectedReason.add("Cabs are not available");
+        rejectedReason.add("Cabs are notification singleRequest available");
         rejectedReason.add("Book OLA or UBER");
         rejectedReason.add("Drivers are busy");
         rejectedReason.add("Cabs are reserved for other people");
         rejectedReason.add("Permissions Denied");
         rejectedReason.add("Manager Rejected");
-        rejectedReason.add("Cabs are not provided at requested time");
+        rejectedReason.add("Cabs are notificationSingleRequest provided at requested time");
         rejectedReasonAdapter = new SpinnerAdapter(getActivity(), android.R.layout.simple_spinner_item, rejectedReason);
         rejectedSpinner.setAdapter(rejectedReasonAdapter);
         rejectedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -108,22 +109,39 @@ public class RejectCab extends Fragment
             public void onClick(View v)
             {
                 loadingDialog.show();
-                String notificationUniqueKey = FirebaseNotification.not(String.valueOf(gen()), registrationToken, getActivity());
-                if (notificationUniqueKey.length() > 0)
+                FirebaseNotification.notificationSingleRequest(String.valueOf(gen()), registrationToken, getActivity(), new NotificationListener()
                 {
-                    loadingDialog.dismiss();
-                    String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
-                    String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
-                    String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
-                    mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(uid).child(id);
-                    mDatabase.child("facility_status").setValue("true");
-                    mDatabase.child("facilityDecision").setValue("false");
-                    notificationUser(notificationUniqueKey, "Cab is Rejected", rejectedReasonValue + " " + rejectOptional.getText().toString(), getActivity());
-                } else
-                {
-                    loadingDialog.dismiss();
-                    HelperMethods.showDialog(getActivity(), "Error", "FCM server is down please try again later...");
-                }
+                    @Override
+                    public void notificationKey(JSONObject notificationValue)
+                    {
+                        loadingDialog.dismiss();
+                       String notificationUniqueKey = notificationValue.optString("notification_key");
+                        if (notificationUniqueKey.length() > 0)
+                        {
+                            loadingDialog.dismiss();
+                            String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
+                            String month = new SimpleDateFormat("MMMM", Locale.getDefault()).format(new Date());
+                            String day = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
+                            mDatabase = FirebaseDatabase.getInstance().getReference().child("RequestCab").child(year).child(month).child(day).child(uid).child(id);
+                            mDatabase.child("facility_status").setValue("true");
+                            mDatabase.child("facilityDecision").setValue("false");
+                            notificationUser(notificationUniqueKey, "Cab is Rejected", rejectedReasonValue + " " + rejectOptional.getText().toString(), getActivity());
+                        } else
+                        {
+                            loadingDialog.dismiss();
+                            HelperMethods.showDialog(getActivity(), "Error", "FCM server is down please try again later...");
+                        }
+
+                    }
+
+                    @Override
+                    public void error(String error)
+                    {
+                        loadingDialog.dismiss();
+                        HelperMethods.showDialog(getActivity(), "Error", "FCM server is down please try again later...");
+                    }
+                });
+
             }
         });
 

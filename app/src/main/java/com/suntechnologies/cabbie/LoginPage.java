@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,6 +29,29 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.suntechnologies.cabbie.firebaseNotification.FirebaseNotification;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import dmax.dialog.SpotsDialog;
 
@@ -57,8 +81,8 @@ public class LoginPage extends AppCompatActivity
         final Button login = (Button) findViewById(R.id.login);
         TextView signUp = (TextView) findViewById(R.id.signUpText);
 
-/*        email.setText("hareeshs@suntechnologies.com");
-        password.setText("Reset123");*/
+        email.setText("vasubr@suntechnologies.com");
+        password.setText("Reset123");
 
         loadingDialog = new SpotsDialog(this, "Logging...");
         preferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE);
@@ -105,7 +129,7 @@ public class LoginPage extends AppCompatActivity
                 {
                     if (!HelperMethods.isValidEmaillId(email.getText().toString().trim()))
                     {
-                        email.setError("Email is not valid");
+                        email.setError("Email is notificationSingleRequest valid");
                     } else
                     {
                         loadingDialog.show();
@@ -177,7 +201,7 @@ public class LoginPage extends AppCompatActivity
 
                                     } catch (FirebaseAuthInvalidCredentialsException e)
                                     {
-                                        HelperMethods.showDialog(LoginPage.this, "Error", "this credential is not available!");
+                                        HelperMethods.showDialog(LoginPage.this, "Error", "this credential is notificationSingleRequest available!");
 
                                     } catch (FirebaseAuthUserCollisionException e)
                                     {
@@ -201,4 +225,5 @@ public class LoginPage extends AppCompatActivity
         });
 
     }
+
 }
