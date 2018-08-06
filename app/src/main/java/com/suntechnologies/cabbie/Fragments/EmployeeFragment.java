@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.suntechnologies.cabbie.Adapters.EmployeeAdapter;
+import com.suntechnologies.cabbie.DataHolders.EmergencyData;
 import com.suntechnologies.cabbie.DataHolders.EmployeeViewHolder;
 import com.suntechnologies.cabbie.Model.Employee;
 import com.suntechnologies.cabbie.R;
@@ -99,7 +100,7 @@ public class EmployeeFragment extends Fragment
                 {
                     System.out.print("employee data" + employee);
                     employeeCabRequestList.add(new Employee(employee.employee_name, employee.employee_id, employee.employee_manger_name, employee.employee_desitnation,
-                            employee.manager_status, employee.facility_status, employee.pickuptime, employee.date, employee.registrationToken, employee.uid, "", ""));
+                            employee.manager_status, employee.facility_status, employee.pickuptime, employee.date, employee.registrationToken, employee.uid, "", "", employee.emergencyData));
 
                     if (employeeCabRequestList.size() > 0)
                     {

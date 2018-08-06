@@ -1,12 +1,9 @@
 package com.suntechnologies.cabbie;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,7 +31,7 @@ import com.suntechnologies.cabbie.DataHolders.UserData;
 import com.suntechnologies.cabbie.Fragments.AccountDetails;
 import com.suntechnologies.cabbie.Fragments.CabDetails;
 import com.suntechnologies.cabbie.Fragments.CabRequest;
-import com.suntechnologies.cabbie.Fragments.EmergencyDetails;
+import com.suntechnologies.cabbie.Fragments.EmergencyFragment;
 import com.suntechnologies.cabbie.Fragments.EmployeeFragment;
 import com.suntechnologies.cabbie.Fragments.FacilityFragment;
 import com.suntechnologies.cabbie.Fragments.ManagerDetails;
@@ -43,8 +39,6 @@ import com.suntechnologies.cabbie.Fragments.Notification;
 import com.suntechnologies.cabbie.Fragments.OnBoarding;
 import com.suntechnologies.cabbie.Fragments.PreviousRideDetails;
 import com.suntechnologies.cabbie.Model.EmployeeUserID;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -310,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         {
 
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmergencyDetails(), true);
+            HelperMethods.replaceFragment(MainActivity.this, frameLayout.getId(), new EmergencyFragment(), true);
         } else if (id == R.id.nav_logout)
         {
             FirebaseAuth.getInstance().signOut();
